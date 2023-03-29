@@ -1,0 +1,74 @@
+# NestJs BufConnect
+
+NestJs BufConnect is a custom transport strategy for [NestJs microservices](https://docs.nestjs.com/microservices/basics) that integrates with the [Buf's gRPC implementation](https://connect.build/). The library provides easy-to-use decorators for gRPC services and methods, allowing you to define and implement gRPC services seamlessly in your NestJs applications.
+
+## Features
+
+- Decorators for defining gRPC services and methods
+- Integration with Buf's gRPC implementation
+- Custom transport strategy for NestJs microservices
+- Support for NestJs pipes, interceptors, guards, etc
+
+## Installation
+
+```bash
+pnpm install @wisewolf-oss/nestjs-bufconnect
+npm install ---save @wisewolf-oss/nestjs-bufconnect
+yarn install ---save @wisewolf-oss/nestjs-bufconnect
+```
+## Usage
+
+1. Import `ServerBufConnect` from the `@wisewolf-oss/nestjs-bufconnect` package.
+    ```typescript
+    import { ServerBufConnect } from '@wisewolf-oss/nestjs-bufconnect';
+    ```
+2. Create a new instance of `ServerBufConnect` and pass it as the strategy in your microservice options.
+    ```typescript
+    import { NestFactory } from '@nestjs/core';
+    import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+    import { ServerBufConnect } from 'nestjs-bufconnect';
+    import { AppModule } from './app/app.module';
+    
+    async function bootstrap() {
+      const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+        AppModule,
+        {
+          strategy: new ServerBufConnect(),
+        }
+      );
+    
+      await app.listen();
+    }
+    
+    bootstrap();
+    ```
+3. Use the `BufConnectService` and `BufConnectMethod` decorators to define your gRPC services and methods.
+
+    ```typescript
+    import { BufConnectService, BufConnectMethod } from '@wisewolf-oss/nestjs-bufconnect';
+    import { MyServiceDefinition } from './my-service.definition';
+    
+    @BufConnectService(MyServiceDefinition)
+    class MyService {
+      @BufConnectMethod()
+      async myMethod(request: MyRequest, context: MyContext): Promise<MyResponse> {
+        // Your implementation here
+      }
+    }
+    ```
+   
+## Todo
+
+- [ ] Add support for client-side gRPC services
+- [ ] Add support for gRPC streaming (already stubbed)
+
+# MIT License
+
+
+Copyright 2023 Patrick Wolf
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
