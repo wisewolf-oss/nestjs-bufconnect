@@ -44,18 +44,35 @@ yarn install ---save @wisewolf-oss/nestjs-bufconnect
     ```
 3. Use the `BufConnectService` and `BufConnectMethod` decorators to define your gRPC services and methods.
 
-    ```typescript
-    import { BufConnectService, BufConnectMethod } from '@wisewolf-oss/nestjs-bufconnect';
-    import { MyServiceDefinition } from './my-service.definition';
-    
-    @BufConnectService(MyServiceDefinition)
-    class MyService {
-      @BufConnectMethod()
-      async myMethod(request: MyRequest, context: MyContext): Promise<MyResponse> {
-        // Your implementation here
-      }
-    }
-    ```
+```typescript
+import { Get } from '@nestjs/common';
+
+import {
+  BufConnectMethod,
+  BufConnectService,
+} from '@wisewolf-oss/nestjs-bufconnect';
+import { AppService } from './app.service';
+import { ElizaService } from '../gen/eliza_connect';
+import { SayRequest } from '../gen/eliza_pb';
+
+@BufConnectService(ElizaService)
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+  // Standard controller method
+  @Get()
+  getData() {
+    return this.appService.getData();
+  }
+
+  @BufConnectMethod()
+  async say(request: SayRequest) {
+    console.log('calling say');
+    return {
+      sentence: `say() said: ${request.sentence}`,
+    };
+  }
+}
+```
    
 ## Todo
 
