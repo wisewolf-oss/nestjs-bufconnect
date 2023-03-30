@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'nestjs-bufconnect',
   preset: '../../jest.preset.js',
@@ -8,4 +7,5 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/packages/nestjs-bufconnect',
+  modulePathIgnorePatterns: ['test-utils'],
 };

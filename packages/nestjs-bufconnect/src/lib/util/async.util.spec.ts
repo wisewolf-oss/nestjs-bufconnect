@@ -50,7 +50,7 @@ describe('async', () => {
 
       const result = transformToObservable(input);
 
-      await expect(await lastValueFrom(result)).rejects.toThrow('test-error');
+      await expect(lastValueFrom(result)).rejects.toThrow('test-error');
     });
   });
 });
