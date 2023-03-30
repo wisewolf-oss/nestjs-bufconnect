@@ -1,6 +1,10 @@
+[![GitHub license](https://img.shields.io/github/license/wisewolf-oss/nestjs-bufconnect?style=flat-square)](https://github.com/wisewolf-oss/nestjs-bufconnect/blob/main/LICENSE)
+
 # NestJs BufConnect
 
 NestJs BufConnect is a custom transport strategy for [NestJs microservices](https://docs.nestjs.com/microservices/basics) that integrates with the [Buf's gRPC implementation](https://connect.build/). The library provides easy-to-use decorators for gRPC services and methods, allowing you to define and implement gRPC services seamlessly in your NestJs applications.
+
+**This project is in active development**
 
 ## Features
 
@@ -12,21 +16,19 @@ NestJs BufConnect is a custom transport strategy for [NestJs microservices](http
 ## Installation
 
 ```bash
-pnpm install @wisewolf-oss/nestjs-bufconnect
-npm install ---save @wisewolf-oss/nestjs-bufconnect
-yarn install ---save @wisewolf-oss/nestjs-bufconnect
+TBD
 ```
 ## Usage
 
-1. Import `ServerBufConnect` from the `@wisewolf-oss/nestjs-bufconnect` package.
-    ```typescript
-    import { ServerBufConnect } from '@wisewolf-oss/nestjs-bufconnect';
-    ```
+1. Import `ServerBufConnect` from the `@wisewolf/nestjs-bufconnect` package.
+   ```typescript
+   import { ServerBufConnect } from '@wisewolf/nestjs-bufconnect';
+   ```
 2. Create a new instance of `ServerBufConnect` and pass it as the strategy in your microservice options.
     ```typescript
     import { NestFactory } from '@nestjs/core';
     import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-    import { ServerBufConnect } from 'nestjs-bufconnect';
+    import { ServerBufConnect } from '@wisewolf/nestjs-bufconnect';
     import { AppModule } from './app/app.module';
     
     async function bootstrap() {
@@ -44,35 +46,35 @@ yarn install ---save @wisewolf-oss/nestjs-bufconnect
     ```
 3. Use the `BufConnectService` and `BufConnectMethod` decorators to define your gRPC services and methods.
 
-```typescript
-import { Get } from '@nestjs/common';
-
-import {
-  BufConnectMethod,
-  BufConnectService,
-} from '@wisewolf-oss/nestjs-bufconnect';
-import { AppService } from './app.service';
-import { ElizaService } from '../gen/eliza_connect';
-import { SayRequest } from '../gen/eliza_pb';
-
-@BufConnectService(ElizaService)
-export class AppController {
-  constructor(private readonly appService: AppService) {}
-  // Standard controller method
-  @Get()
-  getData() {
-    return this.appService.getData();
-  }
-
-  @BufConnectMethod()
-  async say(request: SayRequest) {
-    console.log('calling say');
-    return {
-      sentence: `say() said: ${request.sentence}`,
-    };
-  }
-}
-```
+   ```typescript
+   import { Get } from '@nestjs/common';
+   
+   import {
+     BufConnectMethod,
+     BufConnectService,
+   } from '@wisewolf/nestjs-bufconnect';
+   import { AppService } from './app.service';
+   import { ElizaService } from '../gen/eliza_connect';
+   import { SayRequest } from '../gen/eliza_pb';
+   
+   @BufConnectService(ElizaService)
+   export class AppController {
+     constructor(private readonly appService: AppService) {}
+     // Standard controller method
+     @Get()
+     getData() {
+       return this.appService.getData();
+     }
+   
+     @BufConnectMethod()
+     async say(request: SayRequest) {
+       console.log('calling say');
+       return {
+         sentence: `say() said: ${request.sentence}`,
+       };
+     }
+   }
+   ```
    
 ## Todo
 
