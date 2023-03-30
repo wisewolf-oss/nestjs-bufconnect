@@ -1,4 +1,5 @@
 [![GitHub license](https://img.shields.io/github/license/wisewolf-oss/nestjs-bufconnect?style=flat-square)](https://github.com/wisewolf-oss/nestjs-bufconnect/blob/main/LICENSE)
+[![semantic-release: angular](https://img.shields.io/badge/semantic--release-conventionalcommits-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
 # NestJs BufConnect
 
@@ -18,6 +19,7 @@ NestJs BufConnect is a custom transport strategy for [NestJs microservices](http
 ```bash
 TBD
 ```
+
 ## Usage
 
 1. Import `ServerBufConnect` from the `@wisewolf/nestjs-bufconnect` package.
@@ -25,30 +27,32 @@ TBD
    import { ServerBufConnect } from '@wisewolf/nestjs-bufconnect';
    ```
 2. Create a new instance of `ServerBufConnect` and pass it as the strategy in your microservice options.
-    ```typescript
-    import { NestFactory } from '@nestjs/core';
-    import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-    import { ServerBufConnect } from '@wisewolf/nestjs-bufconnect';
-    import { AppModule } from './app/app.module';
-    
-    async function bootstrap() {
-      const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-        AppModule,
-        {
-          strategy: new ServerBufConnect(),
-        }
-      );
-    
-      await app.listen();
-    }
-    
-    bootstrap();
-    ```
+
+   ```typescript
+   import { NestFactory } from '@nestjs/core';
+   import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+   import { ServerBufConnect } from '@wisewolf/nestjs-bufconnect';
+   import { AppModule } from './app/app.module';
+
+   async function bootstrap() {
+     const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+       AppModule,
+       {
+         strategy: new ServerBufConnect(),
+       }
+     );
+
+     await app.listen();
+   }
+
+   bootstrap();
+   ```
+
 3. Use the `BufConnectService` and `BufConnectMethod` decorators to define your gRPC services and methods.
 
    ```typescript
    import { Get } from '@nestjs/common';
-   
+
    import {
      BufConnectMethod,
      BufConnectService,
@@ -56,7 +60,7 @@ TBD
    import { AppService } from './app.service';
    import { ElizaService } from '../gen/eliza_connect';
    import { SayRequest } from '../gen/eliza_pb';
-   
+
    @BufConnectService(ElizaService)
    export class AppController {
      constructor(private readonly appService: AppService) {}
@@ -65,7 +69,7 @@ TBD
      getData() {
        return this.appService.getData();
      }
-   
+
      @BufConnectMethod()
      async say(request: SayRequest) {
        console.log('calling say');
@@ -75,7 +79,7 @@ TBD
      }
    }
    ```
-   
+
 ## Todo
 
 - [ ] Add support for client-side gRPC services
@@ -83,11 +87,10 @@ TBD
 
 # MIT License
 
-
 Copyright 2023 Patrick Wolf
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

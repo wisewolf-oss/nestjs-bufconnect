@@ -5,7 +5,8 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky install",
-    "commit": "commit"
+    "commit": "commit",
+    "test": "nx run-many --target=test --all --parallel"
   },
   "private": true,
   "devDependencies": {
