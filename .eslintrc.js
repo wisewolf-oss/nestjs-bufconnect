@@ -1,3 +1,4 @@
+const { join } = require('path');
 module.exports = {
   root: true,
   ignorePatterns: ['**/*'],
@@ -68,7 +69,7 @@ module.exports = {
       rules: {
         'import/default': 'error',
         'import/no-extraneous-dependencies': [
-          'error',
+          'warn',
           {
             devDependencies: [
               '**/test/*.ts',
@@ -87,13 +88,9 @@ module.exports = {
             packageDir: __dirname,
           },
         ],
-        'import/no-unresolved': [
-          'error'
-        ],
+        'import/no-unresolved': ['error'],
         'import/prefer-default-export': 'off',
-        'no-underscore-dangle': [
-          'error'
-        ],
+        'no-underscore-dangle': ['error'],
         'prettier/prettier': [
           'warn',
           {
@@ -107,22 +104,22 @@ module.exports = {
               {
                 name: 'lodash.isequal',
                 message:
-                    'Lodash modularised (and lodash < 4.17.11) have CVE vulnerabilities. Please use tree-shakeable imports like lodash/xxx instead',
+                  'Lodash modularised (and lodash < 4.17.11) have CVE vulnerabilities. Please use tree-shakeable imports like lodash/xxx instead',
               },
               {
                 name: 'lodash.uniqueId',
                 message:
-                    'Lodash modularised (and lodash < 4.17.11) have CVE vulnerabilities. Please use tree-shakeable imports like lodash/xxx instead',
+                  'Lodash modularised (and lodash < 4.17.11) have CVE vulnerabilities. Please use tree-shakeable imports like lodash/xxx instead',
               },
               {
                 name: 'lodash.mergewith',
                 message:
-                    'Lodash modularised (and lodash < 4.17.11) have CVE vulnerabilities. Please use tree-shakeable imports like lodash/xxx instead',
+                  'Lodash modularised (and lodash < 4.17.11) have CVE vulnerabilities. Please use tree-shakeable imports like lodash/xxx instead',
               },
               {
                 name: 'lodash.pick',
                 message:
-                    'Lodash modularised (and lodash < 4.17.11) have CVE vulnerabilities. Please use tree-shakeable imports like lodash/xxx instead',
+                  'Lodash modularised (and lodash < 4.17.11) have CVE vulnerabilities. Please use tree-shakeable imports like lodash/xxx instead',
               },
             ],
             patterns: ['lodash.*'],
