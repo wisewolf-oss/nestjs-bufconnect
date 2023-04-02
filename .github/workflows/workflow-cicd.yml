@@ -17,7 +17,6 @@ jobs:
     if: ${{ (github.event_name == 'pull_request') }}
     uses: ./.github/workflows/nx-cloud-main.yml
     with:
-      coverage-path: coverage
       main-branch-name: ${{ github.event.pull_request.base.ref || github.ref_name }}
       number-of-agents: 3
       init-commands: |
@@ -34,6 +33,7 @@ jobs:
     uses: ./.github/workflows/nx-cloud-main.yml
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     with:
       main-branch-name: ${{ github.ref_name }}
       number-of-agents: 3
