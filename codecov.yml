@@ -1,0 +1,6 @@
+component_management:
+  individual_components:
+    - component_id: nestjs-bufconnect
+      name: NestJs BufConnect
+      paths:
+        - coverage/nestjs-bufconnect/
