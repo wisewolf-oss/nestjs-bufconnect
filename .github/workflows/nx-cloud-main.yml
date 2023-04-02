@@ -78,8 +78,6 @@ env:
   NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
-  GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token}}
 
 jobs:
   main:
@@ -92,6 +90,9 @@ jobs:
         working-directory: ${{ inputs.working-directory || github.workspace }}
         # Specify shell to help normalize across different operating systems
         shell: bash
+    env:
+      GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+      GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
     steps:
       - name: Generate token
         id: generate_token
