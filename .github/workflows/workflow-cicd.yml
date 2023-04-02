@@ -30,7 +30,7 @@ jobs:
         pnpm exec nx affected --target=test --parallel=3 --ci --code-coverage
         pnpm exec nx affected --target=build --parallel=3
       final-commands: |
-        pnpm exec nx affected --target=test --parallel=3 --ci --code-coverage
+        pnpm exec nx affected --target=test --ci --code-coverage
         ls -latr
   release:
     name: Nx Cloud - Release Job
