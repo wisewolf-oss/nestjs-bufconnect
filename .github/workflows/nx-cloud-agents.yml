@@ -1,10 +1,5 @@
 name: Nx Cloud Agents
 
-permissions:
-  pull-requests: write
-  issues: write
-  contents: write
-
 on:
   workflow_call:
     secrets:
@@ -52,7 +47,6 @@ env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   set-agents:
@@ -101,7 +95,7 @@ jobs:
       # Install pnpm with exact version provided by consumer or fallback to latest
       - name: Install PNPM
         if: steps.package_manager.outputs.name == 'pnpm'
-        uses: pnpm/action-setup@v2.2.4
+        uses: pnpm/action-setup@v2.2.2
         with:
           version: ${{ inputs.pnpm-version || 'latest' }}
 

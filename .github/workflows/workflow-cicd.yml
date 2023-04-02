@@ -15,9 +15,9 @@ jobs:
   pr:
     name: Nx Cloud - PR Job
     if: ${{ (github.event_name == 'pull_request') }}
+    uses: ./.github/workflows/nx-cloud-main.yml
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-    uses: ./.github/workflows/nx-cloud-main.yml
     with:
       main-branch-name: ${{ github.event.pull_request.base.ref || github.ref_name }}
       number-of-agents: 3
@@ -29,20 +29,16 @@ jobs:
         pnpm exec nx affected --target=build --parallel=3
       final-commands: |
         pnpm exec nx-cloud stop-all-agents
-        pnpm exec nx-cloud record -- pnpm exec nx affected --target=test --ci --code-coverage
-        pnpm exec nx-cloud record -- ls -latr
   release:
     name: Nx Cloud - Release Job
     if: ${{ (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
+    uses: ./.github/workflows/nx-cloud-main.yml
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-    uses: ./.github/workflows/nx-cloud-main.yml
     with:
       main-branch-name: ${{ github.ref_name }}
       number-of-agents: 3
-      init-commands: |
-        pnpm exec nx-cloud start-ci-run --stop-agents-after="semantic-release" --agent-count=3
       parallel-commands: |
         pnpm exec nx-cloud record -- pnpm exec nx format:check
       parallel-commands-on-agents: |
@@ -51,6 +47,7 @@ jobs:
         pnpm exec nx affected --target=build --parallel=3
       final-commands: |
         pnpm exec nx affected --target=semantic-release
+        pnpm exec nx-cloud stop-all-agents
   agents:
     name: Nx Cloud - Agents
     uses: ./.github/workflows/nx-cloud-agents.yml
