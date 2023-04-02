@@ -9,6 +9,12 @@ on:
         required: false
       NX_CLOUD_AUTH_TOKEN:
         required: false
+      CODECOV_TOKEN:
+        required: false
+      BOT_APP_ID:
+        required: false
+      BOT_PRIVATE_KEY:
+        required: false
     inputs:
       number-of-agents:
         required: true
