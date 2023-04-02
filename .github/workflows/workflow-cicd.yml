@@ -35,6 +35,7 @@ jobs:
     name: Release
     needs: [main, agents]
     if: ${{ success() && (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
+    uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.11.3
     with:
       main-branch-name: ${{ github.event.pull_request.base.ref }}
       number-of-agents: 1
