@@ -15,6 +15,9 @@ on:
       NX_CLOUD_AUTH_TOKEN:
         required: false
     inputs:
+      coverage-path:
+        required: false
+        type: string
       number-of-agents:
         required: false
         type: number
@@ -364,8 +367,10 @@ jobs:
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
+        if: ${{ inputs.coverage-path != '' }}
         with:
           token: ${{secrets.CODECOV_TOKEN}}
+          directory: ${{ inputs.coverage-path }}
 
       - name: Uploading artifacts
         uses: actions/upload-artifact@v3
