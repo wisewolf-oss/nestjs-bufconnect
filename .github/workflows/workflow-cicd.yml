@@ -52,7 +52,7 @@ jobs:
         pnpm exec nx affected --target=semantic-release
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   agents:
     name: Nx Cloud - Agents
