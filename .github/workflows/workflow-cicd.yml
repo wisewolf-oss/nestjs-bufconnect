@@ -30,8 +30,8 @@ jobs:
         pnpm exec nx affected --target=test --parallel=3 --ci --code-coverage
         pnpm exec nx affected --target=build --parallel=3
       final-commands: |
-        pnpm exec nx affected --target=test --ci --code-coverage
-        ls -latr
+        pnpm exec nx-cloud record -- pnpm exec nx affected --target=test --ci --code-coverage
+        pnpm exec nx-cloud record -- ls -latr
   release:
     name: Nx Cloud - Release Job
     if: ${{ (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
