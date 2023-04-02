@@ -1,5 +1,10 @@
 name: workflow-cicd
 
+permissions:
+  pull-requests: write
+  issues: write
+  contents: write
+
 on:
   push:
     branches:
