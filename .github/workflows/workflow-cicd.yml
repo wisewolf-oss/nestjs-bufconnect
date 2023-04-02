@@ -1,10 +1,5 @@
 name: workflow-cicd
 
-permissions:
-  pull-requests: write
-  issues: write
-  contents: write
-
 on:
   push:
     branches:
@@ -49,13 +44,15 @@ jobs:
         pnpm exec nx affected --target=build --parallel=3
       final-commands: |
         pnpm exec nx affected --target=test --parallel=3 --configuration=ci
+        env
         pnpm exec nx affected --target=semantic-release
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   agents:
     name: Nx Cloud - Agents
     uses: ./.github/workflows/nx-cloud-agents.yml
     with:
       number-of-agents: 3
+    NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
