@@ -14,7 +14,7 @@ concurrency:
 jobs:
   main:
     name: Nx Cloud - Main Job
-    uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.11.3
+    uses: ./.github/workflows/nx-cloud-main.yml
     with:
       main-branch-name: ${{ github.event.pull_request.base.ref || github.ref_name }}
       number-of-agents: 3
@@ -28,14 +28,14 @@ jobs:
         pnpm exec nx affected --target=build --parallel=3
   agents:
     name: Nx Cloud - Agents
-    uses: nrwl/ci/.github/workflows/nx-cloud-agents.yml@v0.11.3
+    uses: ./.github/workflows/nx-cloud-agents.yml
     with:
       number-of-agents: 3
   release:
     name: Release
     needs: [main, agents]
     if: ${{ success() && (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
-    uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.11.3
+    uses: ./.github/workflows/nx-cloud-main.yml
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
