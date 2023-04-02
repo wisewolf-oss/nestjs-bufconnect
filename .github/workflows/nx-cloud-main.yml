@@ -90,9 +90,6 @@ jobs:
         working-directory: ${{ inputs.working-directory || github.workspace }}
         # Specify shell to help normalize across different operating systems
         shell: bash
-    env:
-      GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
-      GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
     steps:
       - name: Generate token
         id: generate_token
@@ -313,6 +310,9 @@ jobs:
       # how we want it to in terms of quote escaping, variable assignment etc
       - name: Run any configured init-commands sequentially
         if: ${{ inputs.init-commands != '' }}
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
         run: |
           ${{ inputs.init-commands }}
 
@@ -322,6 +322,8 @@ jobs:
         env:
           PARALLEL_COMMANDS: ${{ inputs.parallel-commands }}
           PARALLEL_COMMANDS_ON_AGENTS: ${{ inputs.parallel-commands-on-agents }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
         with:
           # For the ones configured for main, explicitly set NX_CLOUD_DISTRIBUTED_EXECUTION to false, taking into account commands chained with &&
           # within the strings. In order to properly escape single quotes we need to do some manual replacing and escaping so that the commands
@@ -358,12 +360,18 @@ jobs:
 
       - name: Run any configured parallel commands on main and agent jobs
         # We need to escape the workspace path to be consistent cross-platform: https://github.com/actions/runner/issues/1066
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
         run: ${GITHUB_WORKSPACE//\\//}/.github/workflows/run-commands-in-parallel.sh '${{ steps.parallel_commands_config.outputs.result }}'
 
       # The good thing about the multi-line string input for sequential commands is that we can simply forward it on as is to the bash shell and it will behave
       # how we want it to in terms of quote escaping, variable assignment etc
       - name: Run any configured final-commands sequentially
         if: ${{ inputs.final-commands != '' }}
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
         run: |
           ${{ inputs.final-commands }}
 
