@@ -16,7 +16,7 @@ jobs:
     name: Nx Cloud - Main Job
     uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.11.3
     with:
-      main-branch-name: ${{ github.event.pull_request.base.ref || base.ref }}
+      main-branch-name: ${{ github.event.pull_request.base.ref || github.ref_name }}
       number-of-agents: 3
       init-commands: |
         pnpm exec nx-cloud start-ci-run --stop-agents-after="build" --agent-count=3
@@ -40,7 +40,7 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     with:
-      main-branch-name: ${{ github.event.pull_request.base.ref }}
+      main-branch-name: ${{ github.ref_name }}
       number-of-agents: 1
       init-commands: |
         pnpm exec nx-cloud start-ci-run --stop-agents-after="build" --agent-count=3
