@@ -33,10 +33,9 @@ jobs:
     uses: ./.github/workflows/nx-cloud-main.yml
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
     with:
       main-branch-name: ${{ github.ref_name }}
-      number-of-agents: 1
+      number-of-agents: 3
       init-commands: |
         pnpm exec nx-cloud start-ci-run --stop-agents-after="semantic-release" --agent-count=3
       parallel-commands: |
