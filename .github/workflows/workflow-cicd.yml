@@ -1,3 +1,10 @@
+on:
+  push:
+    branches:
+      - main
+      - beta
+  pull_request:
+
 jobs:
   main:
     name: Nx Cloud - Main Job
