@@ -1,10 +1,5 @@
 name: Nx Cloud Main
 
-permissions:
-  pull-requests: write
-  issues: write
-  contents: write
-
 on:
   workflow_call:
     secrets:
@@ -16,7 +11,15 @@ on:
         required: false
       CODECOV_TOKEN:
         required: false
+      BOT_APP_ID:
+        required: false
+      BOT_PRIVATE_KEY:
+        required: false
     inputs:
+      enable-github-app:
+        required: false
+        type: boolean
+        default: false
       number-of-agents:
         required: false
         type: number
@@ -80,8 +83,6 @@ env:
   NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   main:
@@ -95,6 +96,13 @@ jobs:
         # Specify shell to help normalize across different operating systems
         shell: bash
     steps:
+      - name: Generate token
+        id: generate_token
+        if: ${{ inputs.enable-github-app }}
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.BOT_APP_ID }}
+          private_key: ${{ secrets.BOT_PRIVATE_KEY }}
       - uses: actions/checkout@v3
         name: Checkout [Pull Request]
         if: ${{ github.event_name == 'pull_request' }}
@@ -307,6 +315,9 @@ jobs:
       # how we want it to in terms of quote escaping, variable assignment etc
       - name: Run any configured init-commands sequentially
         if: ${{ inputs.init-commands != '' }}
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
         run: |
           ${{ inputs.init-commands }}
 
@@ -316,6 +327,8 @@ jobs:
         env:
           PARALLEL_COMMANDS: ${{ inputs.parallel-commands }}
           PARALLEL_COMMANDS_ON_AGENTS: ${{ inputs.parallel-commands-on-agents }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
         with:
           # For the ones configured for main, explicitly set NX_CLOUD_DISTRIBUTED_EXECUTION to false, taking into account commands chained with &&
           # within the strings. In order to properly escape single quotes we need to do some manual replacing and escaping so that the commands
@@ -352,12 +365,18 @@ jobs:
 
       - name: Run any configured parallel commands on main and agent jobs
         # We need to escape the workspace path to be consistent cross-platform: https://github.com/actions/runner/issues/1066
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
         run: ${GITHUB_WORKSPACE//\\//}/.github/workflows/run-commands-in-parallel.sh '${{ steps.parallel_commands_config.outputs.result }}'
 
       # The good thing about the multi-line string input for sequential commands is that we can simply forward it on as is to the bash shell and it will behave
       # how we want it to in terms of quote escaping, variable assignment etc
       - name: Run any configured final-commands sequentially
         if: ${{ inputs.final-commands != '' }}
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
         run: |
           ${{ inputs.final-commands }}
 
