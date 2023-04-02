@@ -54,5 +54,6 @@ jobs:
     uses: ./.github/workflows/nx-cloud-agents.yml
     with:
       number-of-agents: 3
-    NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-    CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
