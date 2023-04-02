@@ -9,7 +9,7 @@ on:
   workflow_call:
     secrets:
       CODECOV_TOKEN:
-        required: false
+        required: true
       NPM_TOKEN:
         required: false
       NX_CLOUD_ACCESS_TOKEN:

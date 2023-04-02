@@ -15,10 +15,10 @@ jobs:
   pr:
     name: Nx Cloud - PR Job
     if: ${{ (github.event_name == 'pull_request') }}
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     uses: ./.github/workflows/nx-cloud-main.yml
     with:
-      secrets:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       main-branch-name: ${{ github.event.pull_request.base.ref || github.ref_name }}
       number-of-agents: 3
       parallel-commands: |
@@ -34,11 +34,11 @@ jobs:
   release:
     name: Nx Cloud - Release Job
     if: ${{ (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     uses: ./.github/workflows/nx-cloud-main.yml
     with:
-      secrets:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       main-branch-name: ${{ github.ref_name }}
       number-of-agents: 3
       init-commands: |
