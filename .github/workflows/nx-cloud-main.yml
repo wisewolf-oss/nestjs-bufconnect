@@ -14,6 +14,7 @@ on:
       BOT_APP_ID:
         required: false
       BOT_PRIVATE_KEY:
+        required: false
     inputs:
       number-of-agents:
         required: false
