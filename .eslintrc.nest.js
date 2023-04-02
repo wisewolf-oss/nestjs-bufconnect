@@ -23,7 +23,7 @@ module.exports = {
     project: ['?(packages)/**/tsconfig\\.?(app|lib|spec).json'],
   },
   settings: {
-    'import/internal-regex': '^@wisewolf-oss/|@generated/',
+    'import/internal-regex': '^@wolfcoded/|@generated/',
     'import/extensions': ['.ts'],
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts'],

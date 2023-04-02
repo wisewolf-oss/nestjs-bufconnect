@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@wisewolf-oss/nestjs-bufconnect": [
+      "@wolfcoded/nestjs-bufconnect": [
         "packages/nestjs-bufconnect/src/index.ts"
       ]
     }

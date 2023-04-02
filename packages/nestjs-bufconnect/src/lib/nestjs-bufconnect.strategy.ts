@@ -22,7 +22,7 @@ import { addServicesToRouter, createServiceHandlersMap } from './util';
  * ```ts
  * import { NestFactory } from '@nestjs/core';
  * import { MicroserviceOptions, Transport } from '@nestjs/microservices';
- * import { ServerBufConnect } from '@wisewolf-oss/nestjs-bufconnect';
+ * import { ServerBufConnect } from '@wolfcoded/nestjs-bufconnect';
  * import { AppModule } from './app/app.module';
  *
  * async function bootstrap() {

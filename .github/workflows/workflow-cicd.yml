@@ -12,10 +12,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  main:
+  pr:
     name: Nx Cloud - Main Job
-    needs: [agents]
-    if: ${{ success() && (github.event_name != 'pull_request') }}
+    if: ${{ (github.event_name != 'pull_request') }}
     uses: ./.github/workflows/nx-cloud-main.yml
     with:
       main-branch-name: ${{ github.event.pull_request.base.ref || github.ref_name }}
@@ -30,8 +29,7 @@ jobs:
         pnpm exec nx affected --target=build --parallel=3
   release:
     name: Release
-    needs: [agents]
-    if: ${{ success() && (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
+    if: ${{ (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
     uses: ./.github/workflows/nx-cloud-main.yml
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
