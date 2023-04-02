@@ -35,7 +35,9 @@
       "configurations": {
         "ci": {
           "ci": true,
-          "codeCoverage": true
+          "codeCoverage": true,
+          "coverageReporters": ["lcov"],
+          "coverageDirectory": "coverage/packages/nestjs-bufconnect"
         }
       }
     },

@@ -3,8 +3,6 @@ name: Nx Cloud Agents
 on:
   workflow_call:
     secrets:
-      GH_TOKEN:
-        required: false
       NPM_TOKEN:
         required: false
       NX_CLOUD_ACCESS_TOKEN:
@@ -49,7 +47,6 @@ env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-  GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
 jobs:
   set-agents:
@@ -98,7 +95,7 @@ jobs:
       # Install pnpm with exact version provided by consumer or fallback to latest
       - name: Install PNPM
         if: steps.package_manager.outputs.name == 'pnpm'
-        uses: pnpm/action-setup@v2.2.4
+        uses: pnpm/action-setup@v2
         with:
           version: ${{ inputs.pnpm-version || 'latest' }}
 
