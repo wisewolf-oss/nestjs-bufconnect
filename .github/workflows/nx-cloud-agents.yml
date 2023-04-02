@@ -3,7 +3,7 @@ name: Nx Cloud Agents
 on:
   workflow_call:
     secrets:
-      GITHUB_TOKEN:
+      GH_TOKEN:
         required: false
       NPM_TOKEN:
         required: false
