@@ -21,7 +21,7 @@ module.exports = {
   ],
   plugins: ['@nrwl/nx', 'import', 'sonarjs', 'prettier', 'file-progress'],
   settings: {
-    'import/internal-regex': '^@wisewolf-oss/|@generated/',
+    'import/internal-regex': '^@wolfcoded/|@generated/',
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
     },
