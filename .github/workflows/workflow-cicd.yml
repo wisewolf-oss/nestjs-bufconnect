@@ -14,7 +14,7 @@ concurrency:
 jobs:
   pr:
     name: Nx Cloud - Main Job
-    if: ${{ (github.event_name != 'pull_request') }}
+    if: ${{ (github.event_name == 'pull_request') }}
     uses: ./.github/workflows/nx-cloud-main.yml
     with:
       main-branch-name: ${{ github.event.pull_request.base.ref || github.ref_name }}
