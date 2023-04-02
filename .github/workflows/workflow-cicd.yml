@@ -14,21 +14,53 @@ concurrency:
 jobs:
   main:
     name: Nx Cloud - Main Job
-    uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.11.3
-    with:
-      main-branch-name: beta
-      number-of-agents: 3
-      init-commands: |
-        pnpm exec nx-cloud start-ci-run --stop-agents-after="build" --agent-count=3
-      parallel-commands: |
-        pnpm exec nx-cloud record -- pnpm exec nx format:check
-      parallel-commands-on-agents: |
-        pnpm exec nx affected --target=lint --parallel=3
-        pnpm exec nx affected --target=test --parallel=3 --ci --code-coverage
-        pnpm exec nx affected --target=build --parallel=3
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set main-branch-name
+        run: |
+          TARGET_BRANCH=${{ (github.event_name == 'pull_request' && github.event.pull_request.base.ref) || github.ref_name }}
+          if [[ "$TARGET_BRANCH" == "main" ]] || [[ "$TARGET_BRANCH" == "beta" ]]; then
+            echo "MAIN_BRANCH_NAME=$TARGET_BRANCH" >> $GITHUB_ENV
+          else
+            echo "MAIN_BRANCH_NAME=main" >> $GITHUB_ENV
+          fi
+
+      - name: Run Nx Cloud Main Job
+        uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.11.3
+        with:
+          main-branch-name: ${{ env.MAIN_BRANCH_NAME }}
+          number-of-agents: 3
+          init-commands: |
+            pnpm exec nx-cloud start-ci-run --stop-agents-after="build" --agent-count=3
+          parallel-commands: |
+            pnpm exec nx-cloud record -- pnpm exec nx format:check
+          parallel-commands-on-agents: |
+            pnpm exec nx affected --target=lint --parallel=3
+            pnpm exec nx affected --target=test --parallel=3 --ci --code-coverage
+            pnpm exec nx affected --target=build --parallel=3
 
   agents:
     name: Nx Cloud - Agents
     uses: nrwl/ci/.github/workflows/nx-cloud-agents.yml@v0.11.3
     with:
       number-of-agents: 3
+
+  release:
+    name: Release Build
+    needs: [main, agents]
+    steps:
+      - name: Set main-branch-name
+        run: |
+          TARGET_BRANCH=${{ (github.event_name == 'pull_request' && github.event.pull_request.base.ref) || github.ref_name }}
+          if [[ "$TARGET_BRANCH" == "main" ]] || [[ "$TARGET_BRANCH" == "beta" ]]; then
+            echo "MAIN_BRANCH_NAME=$TARGET_BRANCH" >> $GITHUB_ENV
+          else
+            echo "MAIN_BRANCH_NAME=main" >> $GITHUB_ENV
+          fi
+      - name: Run Nx Cloud Release Job
+        if: ${{ success() && (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
+        with:
+          main-branch-name: main
+          number-of-agents: 1
+          init-commands: |
+            release command here
