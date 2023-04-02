@@ -14,9 +14,9 @@ concurrency:
 jobs:
   main:
     name: Nx Cloud - Main Job
-    uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.11.3
+    uses: ./.github/workflows/nx-cloud-main.yml
     with:
-      main-branch-name: beta
+      main-branch-name: ${{ github.event.pull_request.base.ref || github.ref_name }}
       number-of-agents: 3
       init-commands: |
         pnpm exec nx-cloud start-ci-run --stop-agents-after="build" --agent-count=3
@@ -26,9 +26,29 @@ jobs:
         pnpm exec nx affected --target=lint --parallel=3
         pnpm exec nx affected --target=test --parallel=3 --ci --code-coverage
         pnpm exec nx affected --target=build --parallel=3
-
   agents:
     name: Nx Cloud - Agents
-    uses: nrwl/ci/.github/workflows/nx-cloud-agents.yml@v0.11.3
+    uses: ./.github/workflows/nx-cloud-agents.yml
     with:
       number-of-agents: 3
+  release:
+    name: Release
+    needs: [main, agents]
+    if: ${{ success() && (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
+    uses: ./.github/workflows/nx-cloud-main.yml
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    with:
+      main-branch-name: ${{ github.ref_name }}
+      number-of-agents: 1
+      init-commands: |
+        pnpm exec nx-cloud start-ci-run --stop-agents-after="build" --agent-count=3
+      parallel-commands: |
+        pnpm exec nx-cloud record -- pnpm exec nx format:check
+      parallel-commands-on-agents: |
+        pnpm exec nx affected --target=lint --parallel=3
+        pnpm exec nx affected --target=test --parallel=3 --ci --code-coverage
+        pnpm exec nx affected --target=build --parallel=3
+      final-commands: |
+        pnpm exec nx affected --target=semantic-release --parallel=1
