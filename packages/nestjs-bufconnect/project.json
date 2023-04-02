@@ -38,6 +38,7 @@
           }
         ],
         "buildTarget": "nestjs-bufconnect:build",
+        "changelog": true,
         "repositoryUrl": "https://github.com/wisewolf-oss/nestjs-bufconnect",
         "github": true,
         "outputPath": "dist/packages/nestjs-bufconnect",
