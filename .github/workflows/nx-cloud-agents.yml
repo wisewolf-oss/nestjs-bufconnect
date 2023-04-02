@@ -9,6 +9,8 @@ on:
         required: false
       NX_CLOUD_AUTH_TOKEN:
         required: false
+      CODECOV_TOKEN:
+        required: false
     inputs:
       number-of-agents:
         required: true
@@ -47,7 +49,9 @@ env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   set-agents:
     runs-on: ${{ inputs.runs-on }}
