@@ -29,6 +29,8 @@ jobs:
         pnpm exec nx affected --target=test --parallel=3 --configuration=ci
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      BOT_APP_ID: ${{ secrets.RELEASE_BOT_APP_ID }}
+      BOT_PRIVATE_KEY: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
   release:
     name: Nx Cloud - Release Job
     if: ${{ (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}

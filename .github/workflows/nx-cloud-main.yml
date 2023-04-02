@@ -1,10 +1,5 @@
 name: Nx Cloud Main
 
-permissions:
-  pull-requests: write
-  issues: write
-  contents: write
-
 on:
   workflow_call:
     secrets:
@@ -16,6 +11,9 @@ on:
         required: false
       CODECOV_TOKEN:
         required: false
+      BOT_APP_ID:
+        required: false
+      BOT_PRIVATE_KEY:
     inputs:
       number-of-agents:
         required: false
@@ -80,8 +78,8 @@ env:
   NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+  GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token}}
 
 jobs:
   main:
@@ -95,6 +93,13 @@ jobs:
         # Specify shell to help normalize across different operating systems
         shell: bash
     steps:
+      - name: Generate token
+        id: generate_token
+        if: ${{ secrets.BOT_APP_ID != '' && secrets.BOT_PRIVATE_KEY != '' }}
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.BOT_APP_ID }}
+          private_key: ${{ secrets.BOT_PRIVATE_KEY }}
       - uses: actions/checkout@v3
         name: Checkout [Pull Request]
         if: ${{ github.event_name == 'pull_request' }}
