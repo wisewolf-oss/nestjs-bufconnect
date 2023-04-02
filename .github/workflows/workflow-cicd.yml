@@ -17,7 +17,6 @@ jobs:
     if: ${{ (github.event_name == 'pull_request') }}
     uses: ./.github/workflows/nx-cloud-main.yml
     with:
-      enable-github-app: true
       main-branch-name: ${{ github.event.pull_request.base.ref || github.ref_name }}
       number-of-agents: 3
       parallel-commands: |
@@ -30,8 +29,6 @@ jobs:
         pnpm exec nx affected --target=test --parallel=3 --configuration=ci
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      BOT_APP_ID: ${{ secrets.RELEASE_BOT_APP_ID }}
-      BOT_PRIVATE_KEY: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
   release:
     name: Nx Cloud - Release Job
     if: ${{ (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
@@ -48,7 +45,6 @@ jobs:
         pnpm exec nx affected --target=build --parallel=3
       final-commands: |
         pnpm exec nx affected --target=test --parallel=3 --configuration=ci
-        env
         pnpm exec nx affected --target=semantic-release
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
