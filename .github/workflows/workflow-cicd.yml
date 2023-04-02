@@ -52,6 +52,7 @@ jobs:
         pnpm exec nx affected --target=test --parallel=3
         pnpm exec nx affected --target=build --parallel=3
       final-commands: |
+        pnpm exec nx-cloud record -- pnpm exec nx affected --target=test --parallel=3
         pnpm exec nx affected --target=semantic-release
   agents:
     name: Nx Cloud - Agents
