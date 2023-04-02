@@ -30,10 +30,10 @@ jobs:
         pnpm exec nx-cloud record -- pnpm exec nx format:check
       parallel-commands-on-agents: |
         pnpm exec nx affected --target=lint --parallel=3
-        pnpm exec nx-cloud record -- pnpm exec nx affected --target=test --parallel=3
+        pnpm exec nx-cloud record -- pnpm exec nx affected --target=test --parallel=3 --configuration=ci
         pnpm exec nx affected --target=build --parallel=3
       final-commands: |
-        pnpm exec nx affected --target=test --parallel=3
+        pnpm exec nx affected --target=test --parallel=3 --configuration=ci
   release:
     name: Nx Cloud - Release Job
     if: ${{ (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
@@ -49,10 +49,10 @@ jobs:
         pnpm exec nx-cloud record -- pnpm exec nx format:check
       parallel-commands-on-agents: |
         pnpm exec nx affected --target=lint --parallel=3
-        pnpm exec nx affected --target=test --parallel=3
+        pnpm exec nx-cloud record -- pnpm exec nx affected --target=test --parallel=3 --configuration=ci
         pnpm exec nx affected --target=build --parallel=3
       final-commands: |
-        pnpm exec nx-cloud record -- pnpm exec nx affected --target=test --parallel=3
+        pnpm exec nx affected --target=test --parallel=3 --configuration=ci
         pnpm exec nx affected --target=semantic-release
   agents:
     name: Nx Cloud - Agents
