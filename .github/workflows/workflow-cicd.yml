@@ -1,16 +1,3 @@
-name: workflow-cicd
-
-on:
-  push:
-    branches:
-      - main
-      - beta
-  pull_request:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
-  cancel-in-progress: true
-
 jobs:
   main:
     name: Nx Cloud - Main Job
@@ -41,12 +28,16 @@ jobs:
 
   agents:
     name: Nx Cloud - Agents
-    uses: nrwl/ci/.github/workflows/nx-cloud-agents.yml@v0.11.3
-    with:
-      number-of-agents: 3
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use nrwl/ci/nx-cloud-agents workflow
+        uses: nrwl/ci/.github/workflows/nx-cloud-agents.yml@v0.11.3
+        with:
+          number-of-agents: 3
 
   release:
     name: Release Build
+    runs-on: ubuntu-latest
     needs: [main, agents]
     steps:
       - name: Set main-branch-name
