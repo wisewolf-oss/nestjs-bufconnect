@@ -5,8 +5,8 @@
 
 #### Build Status
 
-- @beta ![](https://github.com/wisewolf-oss/nestjs-bufconnect/actions/workflows/workflow-cicd.yml/badge.svg?branch=beta)
-- @main ![](https://github.com/wisewolf-oss/nestjs-bufconnect/actions/workflows/workflow-cicd.yml/badge.svg?branch=main)
+- @beta [![beta](https://github.com/wisewolf-oss/nestjs-bufconnect/actions/workflows/workflow-cicd.yml/badge.svg?branch=beta)](https://github.com/wisewolf-oss/nestjs-bufconnect/actions?query=branch%3Abeta)
+- @main [![main](https://github.com/wisewolf-oss/nestjs-bufconnect/actions/workflows/workflow-cicd.yml/badge.svg?branch=main)](https://github.com/wisewolf-oss/nestjs-bufconnect/actions?query=branch%3Amain)
 
 # NestJs BufConnect
 
