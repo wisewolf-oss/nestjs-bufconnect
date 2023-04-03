@@ -83,6 +83,8 @@ env:
   NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  GIT_EMAIL: 35993519+wisewolf-bot[bot]@users.noreply.github.com
+  GIT_USERNAME: wisewolf-bot[bot]
 
 jobs:
   main:
@@ -124,12 +126,6 @@ jobs:
         uses: nrwl/nx-set-shas@v3
         with:
           main-branch-name: ${{ inputs.main-branch-name }}
-
-      - name: Configure git user as bot
-        if: ${{ inputs.enable-github-app }}
-        run: |
-          git config user.name "wisewolf-bot[bot]"
-          git config user.email "35993519+wisewolf-bot[bot]@users.noreply.github.com"
 
       - name: Detect package manager
         id: package_manager
@@ -259,8 +255,8 @@ jobs:
       - name: Run any configured install-commands
         if: ${{ inputs.install-commands != '' }}
         env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
-          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           ${{ inputs.install-commands }}
 
@@ -326,8 +322,8 @@ jobs:
       - name: Run any configured init-commands sequentially
         if: ${{ inputs.init-commands != '' }}
         env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
-          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           ${{ inputs.init-commands }}
 
@@ -374,8 +370,8 @@ jobs:
       - name: Run any configured parallel commands on main and agent jobs
         # We need to escape the workspace path to be consistent cross-platform: https://github.com/actions/runner/issues/1066
         env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
-          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: ${GITHUB_WORKSPACE//\\//}/.github/workflows/run-commands-in-parallel.sh '${{ steps.parallel_commands_config.outputs.result }}'
 
       # The good thing about the multi-line string input for sequential commands is that we can simply forward it on as is to the bash shell and it will behave
@@ -383,8 +379,8 @@ jobs:
       - name: Run any configured final-commands sequentially
         if: ${{ inputs.final-commands != '' }}
         env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
-          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           ${{ inputs.final-commands }}
 

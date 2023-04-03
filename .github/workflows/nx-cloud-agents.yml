@@ -58,6 +58,8 @@ env:
   NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  GIT_EMAIL: 35993519+wisewolf-bot[bot]@users.noreply.github.com
+  GIT_USERNAME: wisewolf-bot[bot]
 
 jobs:
   set-agents:
@@ -98,12 +100,6 @@ jobs:
           private_key: ${{ secrets.BOT_PRIVATE_KEY }}
 
       - uses: actions/checkout@v3
-
-      - name: Configure git user as bot
-        if: ${{ inputs.enable-github-app }}
-        run: |
-          git config user.name "wisewolf-bot[bot]"
-          git config user.email "35993519+wisewolf-bot[bot]@users.noreply.github.com"
 
       - name: Detect package manager
         id: package_manager
@@ -232,8 +228,8 @@ jobs:
       - name: Run any configured install-commands
         if: ${{ inputs.install-commands != '' }}
         env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
-          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           ${{ inputs.install-commands }}
 
@@ -260,5 +256,5 @@ jobs:
         run: npx nx-cloud start-agent
         env:
           NX_AGENT_NAME: ${{matrix.agent}}
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
-          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
