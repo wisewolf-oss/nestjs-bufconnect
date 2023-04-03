@@ -1,5 +1,11 @@
 [![GitHub license](https://img.shields.io/github/license/wisewolf-oss/nestjs-bufconnect?style=flat-square)](https://github.com/wisewolf-oss/nestjs-bufconnect/blob/main/LICENSE)
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-conventionalcommits-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
+[![codecov](https://codecov.io/gh/wisewolf-oss/nestjs-bufconnect/branch/beta/graph/badge.svg?token=M9I2MDMKJ2)](https://codecov.io/gh/wisewolf-oss/nestjs-bufconnect)
+
+#### Build Status
+
+- @beta ![](https://github.com/wisewolf-oss/nestjs-bufconnect/actions/workflows/workflow-cicd.yml/badge.svg?branch=beta)
+- @main ![](https://github.com/wisewolf-oss/nestjs-bufconnect/actions/workflows/workflow-cicd.yml/badge.svg?branch=main)
 
 # NestJs BufConnect
 
@@ -17,21 +23,23 @@ NestJs BufConnect is a custom transport strategy for [NestJs microservices](http
 ## Installation
 
 ```bash
-TBD
+pnpm add @wolfcoded/nestjs-bufconnect
+yarn add @wolfcoded/nestjs-bufconnect
+npm install @wolfcoded/nestjs-bufconnect --save
 ```
 
 ## Usage
 
-1. Import `ServerBufConnect` from the `@wisewolf/nestjs-bufconnect` package.
+1. Import `ServerBufConnect` from the `@wolfcoded/nestjs-bufconnect` package.
    ```typescript
-   import { ServerBufConnect } from '@wisewolf/nestjs-bufconnect';
+   import { ServerBufConnect } from '@wolfcoded/nestjs-bufconnect';
    ```
 2. Create a new instance of `ServerBufConnect` and pass it as the strategy in your microservice options.
 
    ```typescript
    import { NestFactory } from '@nestjs/core';
    import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-   import { ServerBufConnect } from '@wisewolf/nestjs-bufconnect';
+   import { ServerBufConnect } from '@wolfcoded/nestjs-bufconnect';
    import { AppModule } from './app/app.module';
 
    async function bootstrap() {
@@ -56,7 +64,7 @@ TBD
    import {
      BufConnectMethod,
      BufConnectService,
-   } from '@wisewolf/nestjs-bufconnect';
+   } from '@wolfcoded/nestjs-bufconnect';
    import { AppService } from './app.service';
    import { ElizaService } from '../gen/eliza_connect';
    import { SayRequest } from '../gen/eliza_pb';
