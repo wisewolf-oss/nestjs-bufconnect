@@ -34,6 +34,7 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       BOT_APP_ID: ${{ secrets.RELEASE_BOT_APP_ID }}
       BOT_PRIVATE_KEY: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+
   release:
     name: Nx Cloud - Release Job
     if: ${{ (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
@@ -56,8 +57,15 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       BOT_APP_ID: ${{ secrets.RELEASE_BOT_APP_ID }}
       BOT_PRIVATE_KEY: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+
   agents:
     name: Nx Cloud - Agents
     uses: ./.github/workflows/nx-cloud-agents.yml
     with:
+      enable-github-app: true
       number-of-agents: 3
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      BOT_APP_ID: ${{ secrets.RELEASE_BOT_APP_ID }}
+      BOT_PRIVATE_KEY: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
