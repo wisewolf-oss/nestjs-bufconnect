@@ -45,6 +45,7 @@ export default [
           description: pkg.description,
           version: pkg.version,
           author: pkg.author,
+          publishConfig: pkg.publishConfig,
           main: 'index.cjs',
           module: 'index.js',
           types: 'index.d.ts',
