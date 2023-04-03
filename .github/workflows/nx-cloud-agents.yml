@@ -9,7 +9,17 @@ on:
         required: false
       NX_CLOUD_AUTH_TOKEN:
         required: false
+      CODECOV_TOKEN:
+        required: false
+      BOT_APP_ID:
+        required: false
+      BOT_PRIVATE_KEY:
+        required: false
     inputs:
+      enable-github-app:
+        required: false
+        type: boolean
+        default: false
       number-of-agents:
         required: true
         type: number
@@ -47,6 +57,8 @@ env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
 jobs:
   set-agents:
     runs-on: ${{ inputs.runs-on }}
@@ -77,6 +89,14 @@ jobs:
         # Specify shell to help normalize across different operating systems
         shell: bash
     steps:
+      - name: Generate token
+        id: generate_token
+        if: ${{ inputs.enable-github-app }}
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.BOT_APP_ID }}
+          private_key: ${{ secrets.BOT_PRIVATE_KEY }}
+
       - uses: actions/checkout@v3
 
       - name: Detect package manager
@@ -205,6 +225,9 @@ jobs:
 
       - name: Run any configured install-commands
         if: ${{ inputs.install-commands != '' }}
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
         run: |
           ${{ inputs.install-commands }}
 
@@ -231,3 +254,5 @@ jobs:
         run: npx nx-cloud start-agent
         env:
           NX_AGENT_NAME: ${{matrix.agent}}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token || github.token }}
