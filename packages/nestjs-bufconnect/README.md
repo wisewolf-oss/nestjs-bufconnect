@@ -1,6 +1,7 @@
 [![GitHub license](https://img.shields.io/github/license/wisewolf-oss/nestjs-bufconnect?style=flat-square)](https://github.com/wisewolf-oss/nestjs-bufconnect/blob/main/LICENSE)
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-conventionalcommits-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 [![codecov](https://codecov.io/gh/wisewolf-oss/nestjs-bufconnect/branch/beta/graph/badge.svg?token=M9I2MDMKJ2)](https://codecov.io/gh/wisewolf-oss/nestjs-bufconnect)
+[![npm version](https://badge.fury.io/js/@wolfcoded%2Fnestjs-bufconnect.svg)](https://badge.fury.io/js/@wolfcoded%2Fnestjs-bufconnect)
 
 #### Build Status
 
