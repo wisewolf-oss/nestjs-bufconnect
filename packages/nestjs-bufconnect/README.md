@@ -30,16 +30,16 @@ npm install @wolfcoded/nestjs-bufconnect --save
 
 ## Usage
 
-1. Import `ServerBufConnect` from the `@wisewolf/nestjs-bufconnect` package.
+1. Import `ServerBufConnect` from the `@wolfcoded/nestjs-bufconnect` package.
    ```typescript
-   import { ServerBufConnect } from '@wisewolf/nestjs-bufconnect';
+   import { ServerBufConnect } from '@wolfcoded/nestjs-bufconnect';
    ```
 2. Create a new instance of `ServerBufConnect` and pass it as the strategy in your microservice options.
 
    ```typescript
    import { NestFactory } from '@nestjs/core';
    import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-   import { ServerBufConnect } from '@wisewolf/nestjs-bufconnect';
+   import { ServerBufConnect } from '@wolfcoded/nestjs-bufconnect';
    import { AppModule } from './app/app.module';
 
    async function bootstrap() {
@@ -64,7 +64,7 @@ npm install @wolfcoded/nestjs-bufconnect --save
    import {
      BufConnectMethod,
      BufConnectService,
-   } from '@wisewolf/nestjs-bufconnect';
+   } from '@wolfcoded/nestjs-bufconnect';
    import { AppService } from './app.service';
    import { ElizaService } from '../gen/eliza_connect';
    import { SayRequest } from '../gen/eliza_pb';
