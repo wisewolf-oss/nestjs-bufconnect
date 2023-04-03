@@ -27,7 +27,7 @@ jobs:
         pnpm exec nx-cloud record -- pnpm exec nx affected --target=test --parallel=3 --configuration=ci
         pnpm exec nx affected --target=build --parallel=3
       final-commands: |
-        pnpm exec nx affected --target=semantic-release --no-dte --dry-run --skip-nx-cache
+        ls -latr
         pnpm exec nx affected --target=test --parallel=3 --configuration=ci
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
