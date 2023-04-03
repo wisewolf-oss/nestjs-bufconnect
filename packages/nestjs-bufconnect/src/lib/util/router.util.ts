@@ -5,10 +5,29 @@ import {
   ServiceImpl,
 } from '@bufbuild/connect';
 import { AnyMessage, ServiceType } from '@bufbuild/protobuf';
-import { MessageHandler } from '@nestjs/microservices';
+import { GrpcMethodStreamingType, MessageHandler } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { CustomMetadataStore } from '../nestjs-bufconnect.provider';
 import { transformToObservable } from './async.util';
+
+/**
+ * Will create a string of a JSON serialized format
+ *
+ * @param service name of the service which should be a match to gRPC service definition name
+ * @param methodName name of the method which is coming after rpc keyword
+ * @param streaming GrpcMethodStreamingType parameter which should correspond to
+ * stream keyword in gRPC service request part
+ */
+export const createPattern = (
+  service: string,
+  methodName: string,
+  streaming: GrpcMethodStreamingType
+): string =>
+  JSON.stringify({
+    service,
+    rpc: methodName,
+    streaming,
+  });
 
 /**
  * Adds services to the given ConnectRouter using the provided serviceHandlersMap and customMetadataStore.
