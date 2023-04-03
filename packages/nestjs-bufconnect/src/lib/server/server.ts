@@ -32,10 +32,15 @@ export class HTTPServer {
         reject(new Error('Server instance is not provided'));
       } else {
         this.server = this.ServerInstance;
-        this.server.listen(port, () => {
-          if (callback) callback();
-          resolve();
-        });
+        if (this.server) {
+          this.server.listen(port, () => {
+            if (callback) callback();
+            resolve();
+          });
+        } else {
+          Logger.error('Server is not initialized');
+          reject(new Error('Server is not initialized'));
+        }
       }
     });
   }
