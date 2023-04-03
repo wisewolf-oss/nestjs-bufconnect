@@ -83,8 +83,6 @@ env:
   NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  GIT_EMAIL: 35993519+wisewolf-bot[bot]@users.noreply.github.com
-  GIT_USERNAME: wisewolf-bot[bot]
 
 jobs:
   main:
@@ -114,6 +112,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           # We need to fetch all branches and commits so that Nx affected has a base to compare against.
           fetch-depth: 0
+          token: ${{ steps.generate_token.outputs.token }}
 
       - uses: actions/checkout@v3
         name: Checkout [Default Branch]
@@ -121,6 +120,7 @@ jobs:
         with:
           # We need to fetch all branches and commits so that Nx affected has a base to compare against.
           fetch-depth: 0
+          token: ${{ steps.generate_token.outputs.token }}
 
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v3

@@ -58,8 +58,6 @@ env:
   NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  GIT_EMAIL: 35993519+wisewolf-bot[bot]@users.noreply.github.com
-  GIT_USERNAME: wisewolf-bot[bot]
 
 jobs:
   set-agents:
@@ -100,6 +98,8 @@ jobs:
           private_key: ${{ secrets.BOT_PRIVATE_KEY }}
 
       - uses: actions/checkout@v3
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
 
       - name: Detect package manager
         id: package_manager
