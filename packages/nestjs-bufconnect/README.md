@@ -17,7 +17,9 @@ NestJs BufConnect is a custom transport strategy for [NestJs microservices](http
 ## Installation
 
 ```bash
-TBD
+pnpm add @wolfcoded/nestjs-bufconnect
+yarn add @wolfcoded/nestjs-bufconnect
+npm install @wolfcoded/nestjs-bufconnect --save
 ```
 
 ## Usage
