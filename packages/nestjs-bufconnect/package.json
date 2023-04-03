@@ -9,6 +9,9 @@
     "microservices",
     "bufconnect"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Patrick Wolf <patrick.wolf@wisewolf.ai>",
   "license": "MIT",
   "bugs": {
