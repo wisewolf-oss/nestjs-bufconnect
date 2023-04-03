@@ -99,6 +99,12 @@ jobs:
 
       - uses: actions/checkout@v3
 
+      - name: Configure git user as bot
+        if: ${{ inputs.enable-github-app }}
+        run: |
+          git config user.name "wisewolf-bot[bot]"
+          git config user.email "35993519+wisewolf-bot[bot]@users.noreply.github.com"
+
       - name: Detect package manager
         id: package_manager
         run: |
