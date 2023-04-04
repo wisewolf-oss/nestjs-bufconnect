@@ -1,3 +1,10 @@
+## [1.0.0-beta.2](https://github.com/wisewolf-oss/nestjs-bufconnect/compare/nestjs-bufconnect-v1.0.0-beta.1...nestjs-bufconnect-v1.0.0-beta.2) (2023-04-04)
+
+
+### Features
+
+* add support for http2 and https ([#20](https://github.com/wisewolf-oss/nestjs-bufconnect/issues/20)) ([3afa103](https://github.com/wisewolf-oss/nestjs-bufconnect/commit/3afa1036a67410714fe8e3867380235ea4f9e81c))
+
 ## 1.0.0-beta.1 (2023-04-03)
 
 ### Features
