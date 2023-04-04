@@ -1,35 +1,37 @@
 import { ConnectRouter } from '@bufbuild/connect';
-import { connectNodeAdapter } from '@bufbuild/connect-node';
 import { isString } from '@nestjs/common/utils/shared.utils';
 import {
   CustomTransportStrategy,
   MessageHandler,
   Server,
 } from '@nestjs/microservices';
-import * as http from 'http';
 
 import { CustomMetadataStore } from './nestjs-bufconnect.provider';
 import { HTTPServer } from './server';
-import { BufConnectServerOptions } from './nestjs-bufconnect.interface';
-import { DEFAULT_BUFCONNECT_SERVER_OPTIONS } from './nestjs-bufconnect.constants';
+import { ServerTypeOptions } from './nestjs-bufconnect.interface';
 import { addServicesToRouter, createServiceHandlersMap } from './util';
 
 /**
- * A custom transport strategy for NestJS microservices that integrates with the '@bufbuild/connect' package.
+ * A custom transport strategy for NestJS microservices that integrates with the '@bufbuild/connect-es' package.
  *
- * Example usage:
+ * @remarks
+ * This class extends the `Server` class provided by NestJS and implements the `CustomTransportStrategy` interface.
  *
- * ```ts
+ * @example
  * import { NestFactory } from '@nestjs/core';
  * import { MicroserviceOptions, Transport } from '@nestjs/microservices';
  * import { ServerBufConnect } from '@wolfcoded/nestjs-bufconnect';
  * import { AppModule } from './app/app.module';
  *
  * async function bootstrap() {
+ *   const serverOptions: HttpOptions = {
+ *     protocol: ServerProtocol.HTTP,
+ *     port: 3000,
+ *   }
+ *
  *   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
- *     AppModule,
- *     {
- *       strategy: new ServerBufConnect(),
+ *     AppModule, {
+ *       strategy: new ServerBufConnect(serverOptions),
  *     }
  *   );
  *
@@ -37,7 +39,6 @@ import { addServicesToRouter, createServiceHandlersMap } from './util';
  * }
  *
  * bootstrap();
- * ```
  */
 export class ServerBufConnect
   extends Server
@@ -47,20 +48,21 @@ export class ServerBufConnect
 
   private server: HTTPServer | null = null;
 
-  private readonly Options: BufConnectServerOptions;
+  private readonly Options: ServerTypeOptions;
 
   /**
    * Constructor for ServerBufConnect.
+   * @param options - The options for configuring the server.
    */
-  constructor(options: Partial<BufConnectServerOptions> = {}) {
+  constructor(options: ServerTypeOptions) {
     super();
     this.CustomMetadataStore = CustomMetadataStore.getInstance();
-    this.Options = { ...DEFAULT_BUFCONNECT_SERVER_OPTIONS, ...options };
+    this.Options = options;
   }
 
   /**
    * Starts the HTTP server, listening on the specified port.
-   * @param {callback} [callback] - An optional callback to be executed when the server starts listening.
+   * @param callback - An optional callback to be executed when the server starts listening.
    * @returns {Promise<void>} A promise that resolves when the server starts listening.
    */
   async listen(
@@ -68,15 +70,8 @@ export class ServerBufConnect
   ): Promise<void> {
     try {
       const router = this.buildRouter();
-      const serverInstance = http.createServer(
-        connectNodeAdapter({
-          routes: router,
-        })
-      );
-      this.server = new HTTPServer(serverInstance);
-      await this.server.listen(this.Options.serverPort, () => {
-        callback();
-      });
+      this.server = new HTTPServer(this.Options, router);
+      await this.server.listen();
     } catch (error) {
       callback(error);
     }
@@ -114,6 +109,7 @@ export class ServerBufConnect
   /**
    * Builds the ConnectRouter with the server's message handlers.
    * @returns A function that takes a ConnectRouter and configures it with the server's message handlers.
+   * @private
    */
   buildRouter() {
     return (router: ConnectRouter) => {
