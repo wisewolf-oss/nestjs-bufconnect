@@ -1,63 +1,145 @@
+import { ConnectRouter } from '@bufbuild/connect';
+import * as selfsigned from 'selfsigned';
+
+import * as https from 'https';
 import * as http from 'http';
-import { Logger } from '@nestjs/common';
-import { HttpServerInstance } from '../nestjs-bufconnect.interface';
 import { HTTPServer } from './server';
+import {
+  Http2InsecureOptions,
+  Http2Options,
+  HttpOptions,
+  HttpsOptions,
+  ServerProtocol,
+} from '../nestjs-bufconnect.interface';
+
+const attributes = [{ name: 'commonName', value: 'NestJsBufConnect' }];
+const pems = selfsigned.generate(attributes, { days: 1 });
 
 describe('HTTPServer', () => {
-  let httpServerInstance: HttpServerInstance;
-  let httpServer: HTTPServer;
+  const mockRouter = (router: ConnectRouter) => {};
 
-  beforeEach(() => {
-    httpServerInstance = http.createServer();
-    httpServer = new HTTPServer(httpServerInstance);
+  describe('listen', () => {
+    it('should listen on HTTP protocol', async () => {
+      const options: HttpOptions = {
+        protocol: ServerProtocol.HTTP,
+        port: 8080,
+      };
+      const server = new HTTPServer(options, mockRouter);
+      await server.listen();
+
+      // TS18047: 'server.server' is possibly 'null'.
+      expect(server.server?.listening).toBe(true);
+      await server.close();
+    });
+
+    it('should listen on HTTPS protocol', async () => {
+      const options: HttpsOptions = {
+        protocol: ServerProtocol.HTTPS,
+        port: 8443,
+        serverOptions: {
+          key: pems.private,
+          cert: pems.cert,
+        },
+      };
+      const server = new HTTPServer(options, mockRouter);
+      await server.listen();
+      // TS18047: 'server.server' is possibly 'null'.
+      expect(server.server?.listening).toBe(true);
+      await server.close();
+    });
+
+    // Add similar tests for HTTP2 and HTTP2_INSECURE
   });
 
-  afterEach(async () => {
-    if (httpServerInstance.listening) {
-      await httpServer.close();
-    }
+  describe('close', () => {
+    it('should close the server if running', async () => {
+      const options: HttpOptions = {
+        protocol: ServerProtocol.HTTP,
+        port: 8080,
+      };
+      const server = new HTTPServer(options, mockRouter);
+      await server.listen();
+      // TS18047: 'server.server' is possibly 'null'.
+      expect(server.server?.listening).toBe(true);
+
+      await server.close();
+      expect(server.server).toBe(null);
+    });
+
+    it('should throw an error if server is not running', async () => {
+      const options: HttpOptions = {
+        protocol: ServerProtocol.HTTP,
+        port: 8080,
+      };
+      const server = new HTTPServer(options, mockRouter);
+      await expect(server.close()).rejects.toThrow('Server is not running');
+    });
   });
 
-  it('should create an HTTPServer instance', () => {
-    expect(httpServer).toBeDefined();
+  describe('startServer', () => {
+    it('should throw an error for invalid protocol', async () => {
+      const options: HttpOptions = {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        protocol: 'INVALID_PROTOCOL' as ServerProtocol,
+        port: 8080,
+      };
+      const server = new HTTPServer(options, mockRouter);
+      await expect(server.listen()).rejects.toThrow('Invalid protocol option');
+    });
   });
 
-  it('should start listening on the specified port', async () => {
-    const port = 3000;
-    const callback = jest.fn();
-
-    await httpServer.listen(port, callback);
-
-    expect(httpServerInstance.listening).toBe(true);
-    expect(callback).toHaveBeenCalledTimes(1);
+  describe('createHttpServer', () => {
+    it('should create an instance of http.Server', () => {
+      const options: HttpOptions = {
+        protocol: ServerProtocol.HTTP,
+        port: 8080,
+      };
+      const server = new HTTPServer(options, mockRouter);
+      const httpServer = server.createHttpServer();
+      expect(httpServer).toBeInstanceOf(http.Server);
+    });
   });
 
-  it('should fail to start listening if the server instance is not provided', async () => {
-    const loggerSpy = jest.spyOn(Logger, 'error');
-    const invalidHttpServer = new HTTPServer(
-      null as unknown as HttpServerInstance
-    );
-
-    await expect(invalidHttpServer.listen(3000)).rejects.toThrow(
-      'Server instance is not provided'
-    );
-    expect(loggerSpy).toHaveBeenCalledWith('Server instance is not provided');
+  describe('createHttpsServer', () => {
+    it('should create an instance of https.Server', () => {
+      const options: HttpsOptions = {
+        protocol: ServerProtocol.HTTPS,
+        port: 8443,
+        serverOptions: {
+          key: pems.private,
+          cert: pems.cert,
+        },
+      };
+      const server = new HTTPServer(options, mockRouter);
+      const httpsServer = server.createHttpsServer();
+      expect(httpsServer).toBeInstanceOf(https.Server);
+    });
   });
 
-  it('should stop listening', async () => {
-    const callback = jest.fn();
-    await httpServer.listen(3000);
-    expect(httpServerInstance.listening).toBe(true);
-
-    await httpServer.close(callback);
-
-    expect(httpServerInstance.listening).toBe(false);
-    expect(callback).toHaveBeenCalledTimes(1);
+  describe('createHttp2Server', () => {
+    it('should create an instance with listen method', () => {
+      const options: Http2Options = {
+        protocol: ServerProtocol.HTTP2,
+        port: 8080,
+        serverOptions: {},
+      };
+      const server = new HTTPServer(options, mockRouter);
+      const http2Server = server.createHttp2Server();
+      expect(typeof http2Server.listen).toBe('function');
+    });
   });
 
-  it('should fail to stop listening if the server is not running', async () => {
-    const loggerSpy = jest.spyOn(Logger, 'warn');
-    await expect(httpServer.close()).rejects.toThrow('Server is not running');
-    expect(loggerSpy).toHaveBeenCalledWith('Server is not running');
+  describe('createHttp2InsecureServer', () => {
+    it('should create an instance with listen method', () => {
+      const options: Http2InsecureOptions = {
+        protocol: ServerProtocol.HTTP2_INSECURE,
+        port: 8080,
+        serverOptions: {},
+      };
+      const server = new HTTPServer(options, mockRouter);
+      const http2Server = server.createHttp2InsecureServer();
+      expect(typeof http2Server.listen).toBe('function');
+    });
   });
 });

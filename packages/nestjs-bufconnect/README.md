@@ -20,6 +20,9 @@ NestJs BufConnect is a custom transport strategy for [NestJs microservices](http
 - Integration with Buf's gRPC implementation
 - Custom transport strategy for NestJs microservices
 - Support for NestJs pipes, interceptors, guards, etc
+- HTTP, HTTPS, and HTTP2 support (secure and insecure)
+  - Able to configure http server options without being constrained by abstraction
+- Support for gRPC streaming (**coming soon**)
 
 ## Installation
 
@@ -39,20 +42,25 @@ npm install @wolfcoded/nestjs-bufconnect --save
 
    ```typescript
    import { NestFactory } from '@nestjs/core';
-   import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-   import { ServerBufConnect } from '@wolfcoded/nestjs-bufconnect';
+   import { MicroserviceOptions } from '@nestjs/microservices';
+   import {
+     HttpOptions,
+     ServerBufConnect,
+     ServerProtocol,
+   } from '@wolfcoded/nestjs-bufconnect';
    import { AppModule } from './app/app.module';
 
-   async function bootstrap() {
-     const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-       AppModule,
-       {
-         strategy: new ServerBufConnect(),
-       }
-     );
+   const serverOptions: HttpOptions = {
+     protocol: ServerProtocol.HTTP,
+     port: 3000,
+   };
 
-     await app.listen();
-   }
+   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+     AppModule,
+     {
+       strategy: new ServerBufConnect(serverOptions),
+     }
+   );
 
    bootstrap();
    ```
@@ -88,6 +96,50 @@ npm install @wolfcoded/nestjs-bufconnect --save
      }
    }
    ```
+
+### HTTP Support
+
+NestJs BufConnect now provides support for different server protocols, including HTTP, HTTPS, and HTTP2 (secure and insecure). You can configure the desired protocol in the server options passed to the `ServerBufConnect` instance:
+
+```typescript
+import {
+  HttpOptions,
+  ServerBufConnect,
+  ServerProtocol,
+} from '@wolfcoded/nestjs-bufconnect';
+
+const serverOptions: HttpOptions = {
+  protocol: ServerProtocol.HTTP, // or ServerProtocol.HTTPS, ServerProtocol.HTTP2, ServerProtocol.HTTP2_INSECURE
+  port: 3000,
+};
+
+const strategy = new ServerBufConnect(serverOptions);
+```
+
+For HTTPS and HTTP2, you will need to provide additional options such as `key`, `cert`, and other relevant configuration options.
+
+For example:
+
+```typescript
+import {
+  HttpsOptions,
+  ServerBufConnect,
+  ServerProtocol,
+} from '@wolfcoded/nestjs-bufconnect';
+
+const serverOptions: HttpsOptions = {
+  protocol: ServerProtocol.HTTPS,
+  port: 3000,
+  serverOptions: {
+    key: fs.readFileSync('path/to/your/private-key.pem'),
+    cert: fs.readFileSync('path/to/your/certificate.pem'),
+  },
+};
+
+const strategy = new ServerBufConnect(serverOptions);
+```
+
+This flexibility allows you to choose the right protocol for your application's requirements and security needs.
 
 ## Todo
 

@@ -1,59 +1,163 @@
 import * as http from 'http';
-import { Logger } from '@nestjs/common';
-import { HttpServerInstance } from '../nestjs-bufconnect.interface';
+import * as https from 'https';
+import * as http2 from 'http2';
+import { ConnectRouter } from '@bufbuild/connect';
+import { connectNodeAdapter } from '@bufbuild/connect-node';
+import {
+  Http2InsecureOptions,
+  Http2Options,
+  ServerTypeOptions,
+  HttpsOptions,
+  ServerProtocol,
+  HttpOptions,
+  ServerInstance,
+} from '../nestjs-bufconnect.interface';
 
 /**
- * The HTTPServer class provides a simple wrapper around Node.js `http.Server` instances,
- * allowing you to start and stop an HTTP server with promises.
+ * The HTTPServer class is responsible for creating and managing the server instance based on the given options.
+ * It supports HTTP, HTTPS, and HTTP2 (secure and insecure) protocols.
  */
 export class HTTPServer {
-  private readonly ServerInstance: HttpServerInstance | null = null;
+  private serverPrivate: ServerInstance = null;
 
-  private server: http.Server | null = null;
+  set server(value: http.Server | https.Server | http2.Http2Server | null) {
+    this.serverPrivate = value;
+  }
 
-  /**
-   * Creates a new HTTPServer instance.
-   * @param {http.Server} serverInstance - The Node.js `http.Server` instance to manage.
-   */
-  constructor(serverInstance: HttpServerInstance) {
-    this.ServerInstance = serverInstance;
+  get server(): http.Server | https.Server | http2.Http2Server | null {
+    return this.serverPrivate;
   }
 
   /**
-   * Starts the HTTP server, listening on the specified port.
-   * @param {number} port - The port on which the server should listen.
-   * @param {() => void} [callback] - An optional callback function that will be called when the server starts listening.
-   * @returns {Promise<void>} A promise that resolves when the server starts listening.
+   * Constructor for the HTTPServer class.
+   * @param options - Server configuration options.
+   * @param router - A function that takes a ConnectRouter and configures it with the server's message handlers.
    */
-  listen(port: number, callback?: () => void): Promise<void> {
+  constructor(
+    private readonly options: ServerTypeOptions,
+    private readonly router: (router: ConnectRouter) => void
+  ) {}
+
+  /**
+   * Starts the server and listens for incoming requests.
+   * @returns A promise that resolves when the server starts listening.
+   */
+  async listen(): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (this.ServerInstance === null) {
-        Logger.error('Server instance is not provided');
-        reject(new Error('Server instance is not provided'));
-      } else {
-        this.server = this.ServerInstance;
-        if (this.server) {
-          this.server.listen(port, () => {
-            if (callback) callback();
-            resolve();
-          });
-        } else {
-          Logger.error('Server is not initialized');
-          reject(new Error('Server is not initialized'));
-        }
-      }
+      this.startServer(resolve, reject);
     });
   }
 
   /**
-   * Stops the HTTP server.
-   * @param {() => void} [callback] - An optional callback function that will be called when the server stops.
-   * @returns {Promise<void>} A promise that resolves when the server stops.
+   * Creates an HTTP server.
+   * @returns An instance of an HTTP server.
+   */
+  createHttpServer(): http.Server {
+    const { serverOptions = {}, connectOptions = {} } = this
+      .options as HttpOptions;
+
+    return http.createServer(
+      serverOptions,
+      connectNodeAdapter({
+        ...connectOptions,
+        routes: this.router,
+      })
+    );
+  }
+
+  /**
+   * Creates an HTTPS server.
+   * @returns An instance of an HTTPS server.
+   */
+  createHttpsServer(): https.Server {
+    const { serverOptions = {}, connectOptions = {} } = this
+      .options as HttpsOptions;
+
+    return https.createServer(
+      serverOptions,
+      connectNodeAdapter({ ...connectOptions, routes: this.router })
+    );
+  }
+
+  /**
+   * Creates an HTTP2 server with secure connection.
+   * @returns An instance of an HTTP2 server with secure connection.
+   */
+  createHttp2Server(): http2.Http2Server {
+    const { serverOptions = {}, connectOptions = {} } = this
+      .options as Http2Options;
+
+    return http2.createSecureServer(
+      serverOptions,
+      connectNodeAdapter({ ...connectOptions, routes: this.router })
+    );
+  }
+
+  /**
+   * Creates an HTTP2 server with secure connection.
+   * @returns An instance of an HTTP2 server with secure connection.
+   */
+  createHttp2InsecureServer(): http2.Http2Server {
+    const { serverOptions = {}, connectOptions = {} } = this
+      .options as Http2InsecureOptions;
+
+    return http2.createServer(
+      serverOptions,
+      connectNodeAdapter({ ...connectOptions, routes: this.router })
+    );
+  }
+
+  /**
+   * Starts the server based on the provided protocol in the options.
+   * @param resolve - A function that resolves the promise when the server starts successfully.
+   * @param reject - A function that rejects the promise with an error when the server fails to start.
+   */
+  startServer(resolve: () => void, reject: (error: Error) => void): void {
+    try {
+      switch (this.options.protocol) {
+        case ServerProtocol.HTTP: {
+          this.server = this.createHttpServer();
+          break;
+        }
+        case ServerProtocol.HTTPS: {
+          this.server = this.createHttpsServer();
+          break;
+        }
+        case ServerProtocol.HTTP2: {
+          this.server = this.createHttp2Server();
+          break;
+        }
+        case ServerProtocol.HTTP2_INSECURE: {
+          this.server = this.createHttp2InsecureServer();
+          break;
+        }
+        default: {
+          // eslint-disable-next-line no-throw-literal
+          throw new Error('Invalid protocol option');
+        }
+      }
+
+      this.server.listen(this.options.port, () => {
+        if (this.options.callback) this.options.callback();
+        resolve();
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        reject(error);
+      } else {
+        reject(new Error('Unknown error occurred'));
+      }
+    }
+  }
+
+  /**
+   * Stops the server and releases all resources.
+   * @param callback - An optional callback function to be executed when the server stops.
+   * @returns A promise that resolves when the server stops.
    */
   close(callback?: () => void): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.server === null) {
-        Logger.warn('Server is not running');
         reject(new Error('Server is not running'));
       } else {
         this.server.close(() => {
