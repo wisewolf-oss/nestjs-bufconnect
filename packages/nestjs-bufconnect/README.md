@@ -141,6 +141,18 @@ const strategy = new ServerBufConnect(serverOptions);
 
 This flexibility allows you to choose the right protocol for your application's requirements and security needs.
 
+#### NOTE
+
+You can generate a self-signed certificate quickly to get up and running quickly.
+
+Install [selfsigned](https://www.npmjs.com/package/selfsigned)
+
+```typescript
+import * as selfsigned from 'selfsigned';
+const attributes = [{ name: 'commonName', value: 'NestJsBufConnect' }];
+const pems = selfsigned.generate(attributes, { days: 1 });
+```
+
 ## Todo
 
 - [ ] Add support for client-side gRPC services
