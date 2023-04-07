@@ -2,6 +2,67 @@ import { Observable } from 'rxjs';
 import { ResultOrDeferred } from '../nestjs-bufconnect.interface';
 
 /**
+ * Checks if the given input is an AsyncGenerator.
+ *
+ * @param input - The object to check.
+ * @returns True if the input is an AsyncGenerator, false otherwise.
+ */
+export function isAsyncGenerator<T>(
+  input: unknown
+): input is AsyncGenerator<T> {
+  return (
+    typeof input === 'object' && input !== null && Symbol.asyncIterator in input
+  );
+}
+
+/**
+ * Converts an Observable to an AsyncGenerator.
+ *
+ * @param observable - The Observable to be converted.
+ * @returns An AsyncGenerator that yields values from the provided Observable.
+ */
+export async function* observableToAsyncGenerator<T>(
+  observable: Observable<T>
+): AsyncGenerator<T> {
+  const queue: T[] = [];
+  let didComplete = false;
+  let error: unknown = null;
+
+  const subscriber = observable.subscribe({
+    next: (value) => {
+      queue.push(value);
+    },
+    error: (innerError) => {
+      error = innerError;
+      didComplete = true;
+    },
+    complete: () => {
+      didComplete = true;
+    },
+  });
+
+  try {
+    while (!didComplete || queue.length > 0) {
+      if (queue.length > 0) {
+        const item = queue.shift();
+        if (item !== undefined) {
+          yield item;
+        }
+      } else {
+        // eslint-disable-next-line no-await-in-loop
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+    }
+
+    if (error) {
+      throw new Error(String(error));
+    }
+  } finally {
+    subscriber.unsubscribe();
+  }
+}
+
+/**
  * Checks if the given object is an instance of Observable.
  *
  * @param object - The object to check.
@@ -66,3 +127,24 @@ export const transformToObservable = <T>(
     subscriber.complete();
   });
 };
+
+/**
+ * Converts an Observable or AsyncGenerator to an AsyncGenerator.
+ *
+ * @param input - The Observable or AsyncGenerator to be converted.
+ * @returns An AsyncGenerator that yields values from the provided input.
+ * @throws An Error if the input is neither an Observable nor an AsyncGenerator.
+ */
+export async function* toAsyncGenerator<T>(
+  input: Observable<T> | AsyncGenerator<T>
+): AsyncGenerator<T> {
+  if (isObservable(input)) {
+    yield* observableToAsyncGenerator(input);
+  } else if (isAsyncGenerator(input)) {
+    yield* input;
+  } else {
+    throw new Error(
+      'Unsupported input type. Expected an Observable or an AsyncGenerator.'
+    );
+  }
+}

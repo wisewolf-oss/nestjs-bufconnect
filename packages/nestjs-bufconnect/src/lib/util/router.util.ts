@@ -1,38 +1,34 @@
-import {
-  ConnectRouter,
-  HandlerContext,
-  MethodImpl,
-  ServiceImpl,
-} from '@bufbuild/connect';
-import { AnyMessage, ServiceType } from '@bufbuild/protobuf';
-import { GrpcMethodStreamingType, MessageHandler } from '@nestjs/microservices';
-import { lastValueFrom } from 'rxjs';
+import { ConnectRouter, ServiceImpl } from '@bufbuild/connect';
+import { ServiceType } from '@bufbuild/protobuf';
+import { MessageHandler } from '@nestjs/microservices';
+import { lastValueFrom, Observable } from 'rxjs';
+import { BufConnectPattern, MethodType } from '../nestjs-bufconnect.interface';
 import { CustomMetadataStore } from '../nestjs-bufconnect.provider';
-import { transformToObservable } from './async.util';
+import { toAsyncGenerator, transformToObservable } from './async.util';
 
 /**
- * Will create a string of a JSON serialized format
+ * Creates a string of a JSON serialized format representing a gRPC service pattern.
  *
- * @param service name of the service which should be a match to gRPC service definition name
- * @param methodName name of the method which is coming after rpc keyword
- * @param streaming GrpcMethodStreamingType parameter which should correspond to
- * stream keyword in gRPC service request part
+ * @param service - The name of the service which should match the gRPC service definition name.
+ * @param methodName - The name of the method which is coming after the rpc keyword.
+ * @param streaming - The GrpcMethodStreamingType parameter which should correspond to the stream keyword in the gRPC service request part.
+ * @returns A JSON string representing the service pattern.
  */
 export const createPattern = (
   service: string,
   methodName: string,
-  streaming: GrpcMethodStreamingType
+  streaming: MethodType
 ): string =>
   JSON.stringify({
     service,
     rpc: methodName,
     streaming,
-  });
+  } as BufConnectPattern);
 
 /**
  * Adds services to the given ConnectRouter using the provided serviceHandlersMap and customMetadataStore.
  *
- * @param router - The ConnectRouter to add services to.
+ * @param router - The ConnectRouter to which services will be added.
  * @param serviceHandlersMap - An object containing service implementations for each service name.
  * @param customMetadataStore - A store containing metadata for the services.
  */
@@ -74,29 +70,75 @@ export const createServiceHandlersMap = (
       const methodProto = service?.methods[parsedPattern.rpc];
 
       if (service && methodProto) {
-        const handler = handlerMetadata as MethodImpl<typeof methodProto>;
-
         if (!serviceHandlersMap[parsedPattern.service]) {
           serviceHandlersMap[parsedPattern.service] = {};
         }
 
-        serviceHandlersMap[parsedPattern.service][parsedPattern.rpc] = async (
-          request: unknown,
-          context: unknown
-        ) => {
-          const result = handler(
-            request as AnyMessage & AsyncIterable<AnyMessage>,
-            context as HandlerContext
-          );
-
-          const resultOrDeferred =
-            result instanceof Promise ? await result : result;
-
-          return lastValueFrom(transformToObservable(resultOrDeferred));
-        };
+        switch (parsedPattern.streaming) {
+          case MethodType.NO_STREAMING: {
+            serviceHandlersMap[parsedPattern.service][parsedPattern.rpc] =
+              async (request: unknown, context: unknown) => {
+                const result = handlerMetadata(request, context);
+                const resultOrDeferred = await result;
+                return lastValueFrom(transformToObservable(resultOrDeferred));
+              };
+            break;
+          }
+          case MethodType.RX_STREAMING: {
+            serviceHandlersMap[parsedPattern.service][parsedPattern.rpc] =
+              async function* rxStreamingHandler(
+                request: unknown,
+                context: unknown
+              ): AsyncGenerator<unknown> {
+                const result = handlerMetadata(request, context);
+                const streamOrValue = await result;
+                yield* toAsyncGenerator<unknown>(
+                  streamOrValue as Observable<unknown> | AsyncGenerator<unknown>
+                );
+              };
+            break;
+          }
+          default: {
+            throw new Error('Invalid streaming type');
+          }
+        }
       }
     }
   });
 
   return serviceHandlersMap;
+};
+
+/**
+ * Creates metadata for a gRPC method within a BufService.
+ *
+ * @param target - The object containing the method implementation.
+ * @param key - The method name, as a string or symbol.
+ * @param service - The name of the service, or undefined if it should be inferred from the target's constructor.
+ * @param method - The name of the method, or undefined if it should be inferred from the key.
+ * @param streaming - The streaming type of the method, defaulting to MethodType.NO_STREAMING.
+ * @returns An object containing the metadata for the gRPC method.
+ */
+export const createBufConnectMethodMetadata = (
+  target: object,
+  key: string | symbol,
+  service: string | undefined,
+  method: string | undefined,
+  streaming = MethodType.NO_STREAMING
+) => {
+  const capitalizeFirstLetter = (input: string) =>
+    input.charAt(0).toUpperCase() + input.slice(1);
+
+  if (!service) {
+    const { name } = target.constructor;
+    return {
+      service: name,
+      rpc: capitalizeFirstLetter(key as string),
+      streaming,
+    };
+  }
+  if (service && !method) {
+    return { service, rpc: capitalizeFirstLetter(key as string), streaming };
+  }
+  return { service, rpc: method, streaming };
 };

@@ -1,18 +1,20 @@
-import {
-  createGrpcMethodMetadata,
-  MessagePattern,
-  Transport,
-} from '@nestjs/microservices';
+import { MessagePattern } from '@nestjs/microservices';
 
 import { ServiceType } from '@bufbuild/protobuf';
-import { METHOD_DECORATOR_KEY } from './nestjs-bufconnect.constants';
+import {
+  BUF_TRANSPORT,
+  METHOD_DECORATOR_KEY,
+  STREAM_METHOD_DECORATOR_KEY,
+} from './nestjs-bufconnect.constants';
 import {
   ConstructorWithPrototype,
   FunctionPropertyDescriptor,
   MethodKey,
   MethodKeys,
+  MethodType,
 } from './nestjs-bufconnect.interface';
 import { CustomMetadataStore } from './nestjs-bufconnect.provider';
+import { createBufConnectMethodMetadata } from './util';
 
 function isFunctionPropertyDescriptor(
   descriptor: PropertyDescriptor | undefined
@@ -22,19 +24,17 @@ function isFunctionPropertyDescriptor(
 
 /**
  * Decorator for defining a gRPC service and its methods. It uses the metadata from
- * `BufConnectMethod` to initialize the service and its methods.
+ * `BufMethod` and `BufStreamMethod` to initialize the service and its methods.
  *
- * @param serviceName - A `BufConnectServiceDefinition` object that defines the gRPC service.
+ * @param serviceName - A `ServiceType` object that defines the gRPC service.
  * @returns A class decorator that can be applied to a class implementing the gRPC service.
  */
-export const BufConnectService =
+export const BufService =
   (serviceName: ServiceType): ClassDecorator =>
   (target: ConstructorWithPrototype) => {
-    const methodKeys: MethodKeys =
-      Reflect.getMetadata(METHOD_DECORATOR_KEY, target) || [];
-
-    methodKeys.forEach((methodImpl) => {
+    const processMethodKey = (methodImpl: MethodKey) => {
       const functionName = methodImpl.key;
+      const { methodType } = methodImpl;
 
       const descriptor = Object.getOwnPropertyDescriptor(
         target.prototype,
@@ -42,35 +42,45 @@ export const BufConnectService =
       );
 
       if (isFunctionPropertyDescriptor(descriptor)) {
-        const metadata = createGrpcMethodMetadata(
+        const metadata = createBufConnectMethodMetadata(
           descriptor.value,
           functionName,
           serviceName.typeName,
-          functionName
+          functionName,
+          methodType
         );
 
         const customMetadataStore = CustomMetadataStore.getInstance();
         customMetadataStore.set(serviceName.typeName, serviceName);
 
-        MessagePattern(metadata, Transport.GRPC)(
+        MessagePattern(metadata, BUF_TRANSPORT)(
           target.prototype,
           functionName,
           descriptor
         );
       }
-    });
+    };
+
+    const unaryMethodKeys: MethodKeys =
+      Reflect.getMetadata(METHOD_DECORATOR_KEY, target) || [];
+    const streamMethodKeys: MethodKeys =
+      Reflect.getMetadata(STREAM_METHOD_DECORATOR_KEY, target) || [];
+
+    unaryMethodKeys.forEach((methodImpl) => processMethodKey(methodImpl));
+    streamMethodKeys.forEach((methodImpl) => processMethodKey(methodImpl));
   };
 
 /**
- * Decorator for a gRPC method within a `BufConnectService`. It stores the method's metadata,
- * which is later used by `BufConnectService` to initialize the method.
+ * Decorator for a unary gRPC method within a `BufService`. It stores the method's metadata,
+ * which is later used by `BufService` to initialize the method.
  *
- * @returns A method decorator that can be applied to a method implementing a gRPC method.
+ * @returns A method decorator that can be applied to a method implementing a unary gRPC method.
  */
-export const BufConnectMethod =
+export const BufMethod =
   (): MethodDecorator => (target: object, key: string | symbol) => {
     const metadata: MethodKey = {
       key: key.toString(),
+      methodType: MethodType.NO_STREAMING,
     };
 
     const existingMethods =
@@ -81,6 +91,33 @@ export const BufConnectMethod =
       existingMethods.add(metadata);
       Reflect.defineMetadata(
         METHOD_DECORATOR_KEY,
+        existingMethods,
+        target.constructor
+      );
+    }
+  };
+
+/**
+ * Decorator for a streaming gRPC method within a `BufService`. It stores the method's metadata,
+ * which is later used by `BufService` to initialize the method.
+ *
+ * @returns A method decorator that can be applied to a method implementing a streaming gRPC method.
+ */
+export const BufStreamMethod =
+  (): MethodDecorator => (target: object, key: string | symbol) => {
+    const metadata: MethodKey = {
+      key: key.toString(),
+      methodType: MethodType.RX_STREAMING,
+    };
+
+    const existingMethods =
+      Reflect.getMetadata(STREAM_METHOD_DECORATOR_KEY, target.constructor) ||
+      new Set();
+
+    if (!existingMethods.has(metadata)) {
+      existingMethods.add(metadata);
+      Reflect.defineMetadata(
+        STREAM_METHOD_DECORATOR_KEY,
         existingMethods,
         target.constructor
       );
