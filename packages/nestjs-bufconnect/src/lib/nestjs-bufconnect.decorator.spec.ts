@@ -5,11 +5,9 @@ import {
 import { ConnectRouter, createPromiseClient } from '@bufbuild/connect';
 import * as http2 from 'http2';
 import { GrpcMethodStreamingType, MessageHandler } from '@nestjs/microservices';
+import { MethodType } from './nestjs-bufconnect.interface';
 import { CustomMetadataStore } from './nestjs-bufconnect.provider';
-import {
-  BufConnectMethod,
-  BufConnectService,
-} from './nestjs-bufconnect.decorator';
+import { BufMethod, BufService } from './nestjs-bufconnect.decorator';
 import { ElizaTestService, SayR } from '../test-utils/mocks/service.test';
 import {
   addServicesToRouter,
@@ -17,16 +15,16 @@ import {
   createServiceHandlersMap,
 } from './util';
 
-@BufConnectService(ElizaTestService)
+@BufService(ElizaTestService)
 class TestService {
   // eslint-disable-next-line class-methods-use-this
-  @BufConnectMethod()
+  @BufMethod()
   say(request: SayR): SayR {
     return { sentence: `you said: ${request.sentence}` } as SayR;
   }
 }
-describe('BufConnectMethod decorators', () => {
-  it('should properly decorate a class with BufConnectService and BufConnectMethod and run', async () => {
+describe('BufMethod decorators', () => {
+  it('should properly decorate a class with BufService and BufMethod and run', async () => {
     let port = -1;
     function routes(router: ConnectRouter) {
       const customMetadataStore = CustomMetadataStore.getInstance();
@@ -42,7 +40,7 @@ describe('BufConnectMethod decorators', () => {
       const pattern = createPattern(
         ElizaTestService.typeName,
         'say',
-        GrpcMethodStreamingType.NO_STREAMING
+        MethodType.NO_STREAMING
       );
       handlers.set(pattern, handler);
 

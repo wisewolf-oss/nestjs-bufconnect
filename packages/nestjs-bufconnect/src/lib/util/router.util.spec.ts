@@ -1,5 +1,6 @@
 import { ConnectRouter, createConnectRouter } from '@bufbuild/connect';
 import { MessageHandler } from '@nestjs/microservices';
+import { MethodType } from '../nestjs-bufconnect.interface';
 import { CustomMetadataStore } from '../nestjs-bufconnect.provider';
 import { ElizaTestService, SayR } from '../../test-utils/mocks/service.test';
 import { addServicesToRouter, createServiceHandlersMap } from './router.util';
@@ -25,7 +26,11 @@ describe('router', () => {
   describe('createServiceHandlersMap', () => {
     it('should create a service handlers map', () => {
       handlers.set(
-        JSON.stringify({ service: ElizaTestService.typeName, rpc: 'say' }),
+        JSON.stringify({
+          service: ElizaTestService.typeName,
+          rpc: 'say',
+          streaming: MethodType.NO_STREAMING,
+        }),
         sayHandler
       );
 
@@ -44,7 +49,11 @@ describe('router', () => {
   describe('addServicesToRouter', () => {
     it('should add services to the router', () => {
       handlers.set(
-        JSON.stringify({ service: ElizaTestService.typeName, rpc: 'say' }),
+        JSON.stringify({
+          service: ElizaTestService.typeName,
+          rpc: 'say',
+          streaming: MethodType.NO_STREAMING,
+        }),
         sayHandler
       );
 

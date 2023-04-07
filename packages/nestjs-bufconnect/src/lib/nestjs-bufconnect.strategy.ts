@@ -97,13 +97,12 @@ export class ServerBufConnect
     isEventHandler = false
   ) {
     const route = isString(pattern) ? pattern : JSON.stringify(pattern);
-
-    const callbackWithEventHandler: MessageHandler<unknown, unknown, unknown> =
-      Object.assign((message: unknown) => callback(message), {
-        isEventHandler,
-      });
-
-    this.messageHandlers.set(route, callbackWithEventHandler);
+    if (isEventHandler) {
+      const modifiedCallback = callback;
+      modifiedCallback.isEventHandler = true;
+      this.messageHandlers.set(route, modifiedCallback);
+    }
+    this.messageHandlers.set(route, callback);
   }
 
   /**

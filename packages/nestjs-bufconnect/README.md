@@ -2,6 +2,7 @@
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-conventionalcommits-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 [![codecov](https://codecov.io/gh/wisewolf-oss/nestjs-bufconnect/branch/beta/graph/badge.svg?token=M9I2MDMKJ2)](https://codecov.io/gh/wisewolf-oss/nestjs-bufconnect)
 [![npm version](https://badge.fury.io/js/@wolfcoded%2Fnestjs-bufconnect.svg)](https://badge.fury.io/js/@wolfcoded%2Fnestjs-bufconnect)
+[![Known Vulnerabilities](https://snyk.io/test/github/wisewolf-oss/nestjs-bufconnect/badge.svg)](https://snyk.io/test/github/wisewolf-oss/nestjs-bufconnect)
 
 #### Build Status
 
@@ -22,7 +23,7 @@ NestJs BufConnect is a custom transport strategy for [NestJs microservices](http
 - Support for NestJs pipes, interceptors, guards, etc
 - HTTP, HTTPS, and HTTP2 support (secure and insecure)
   - Able to configure http server options without being constrained by abstraction
-- Support for gRPC streaming (**coming soon**)
+- Support for gRPC streaming
 
 ## Installation
 
@@ -65,20 +66,17 @@ npm install @wolfcoded/nestjs-bufconnect --save
    bootstrap();
    ```
 
-3. Use the `BufConnectService` and `BufConnectMethod` decorators to define your gRPC services and methods.
+3. Use the `BufService` and `BufMethod` decorators to define your gRPC services and methods.
 
    ```typescript
    import { Get } from '@nestjs/common';
 
-   import {
-     BufConnectMethod,
-     BufConnectService,
-   } from '@wolfcoded/nestjs-bufconnect';
+   import { BufMethod, BufService } from '@wolfcoded/nestjs-bufconnect';
    import { AppService } from './app.service';
    import { ElizaService } from '../gen/eliza_connect';
    import { SayRequest } from '../gen/eliza_pb';
 
-   @BufConnectService(ElizaService)
+   @BufService(ElizaService)
    export class AppController {
      constructor(private readonly appService: AppService) {}
      // Standard controller method
@@ -87,15 +85,71 @@ npm install @wolfcoded/nestjs-bufconnect --save
        return this.appService.getData();
      }
 
-     @BufConnectMethod()
+     @BufMethod()
      async say(request: SayRequest) {
        console.log('calling say');
        return {
          sentence: `say() said: ${request.sentence}`,
        };
      }
+
+     @BufStreamMethod()
+     async *introduce(
+       req: IntroduceRequest
+     ): AsyncGenerator<{ sentence: string }> {
+       yield { sentence: `Hi ${req.name}, I'm Eliza` };
+       await delay(250);
+       yield {
+         sentence: `Before we begin, ${req.name}, let me tell you something about myself.`,
+       };
+       await delay(250);
+       yield { sentence: `I'm a Rogerian psychotherapist.` };
+       await delay(250);
+       yield { sentence: `How are you feeling today?` };
+     }
    }
    ```
+
+### NestJs Pipes, Guards, Interceptors, etc
+
+NestJs BufConnect supports the use of NestJs pipes, guards, interceptors, etc.
+
+```typescript
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
+import { Observable, from, lastValueFrom } from 'rxjs';
+import { isAsyncGenerator } from '@wolfcoded/nestjs-bufconnect';
+
+@Injectable()
+export class ExampleInterceptor implements NestInterceptor {
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler
+  ): Observable<any> | Promise<Observable<any>> {
+    const req = context.switchToRpc().getData();
+    console.log(`[Before] [${JSON.stringify(req)}]`);
+
+    const streamOrValue = next.handle();
+
+    return new Promise(async (resolve) => {
+      console.log(`[Inner] [${JSON.stringify(req)}]`);
+      const value = await lastValueFrom(streamOrValue);
+
+      if (isAsyncGenerator(value)) {
+        console.log(`[After] [${JSON.stringify(req)}]`);
+        resolve(from(value));
+      } else {
+        console.log(`[After] [${JSON.stringify(req)}]`);
+        resolve(streamOrValue);
+      }
+    });
+  }
+}
+```
 
 ### HTTP Support
 
@@ -141,9 +195,11 @@ const strategy = new ServerBufConnect(serverOptions);
 
 This flexibility allows you to choose the right protocol for your application's requirements and security needs.
 
-#### NOTE
+### NOTE
 
-You can generate a self-signed certificate quickly to get up and running quickly.
+- **Steaming support requires HTTP/2 and SSL** (browsers typically don't support HTTP/2 unencrypted)
+
+- You can generate a self-signed certificate to get up and running quickly.
 
 Install [selfsigned](https://www.npmjs.com/package/selfsigned)
 
@@ -156,7 +212,6 @@ const pems = selfsigned.generate(attributes, { days: 1 });
 ## Todo
 
 - [ ] Add support for client-side gRPC services
-- [ ] Add support for gRPC streaming (already stubbed)
 
 # MIT License
 
