@@ -68,7 +68,7 @@ export async function* observableToAsyncGenerator<T>(
  * @param object - The object to check.
  * @returns True if the object is an instance of Observable, false otherwise.
  */
-const isObservable = <T>(object: unknown): object is Observable<T> =>
+export const isObservable = <T>(object: unknown): object is Observable<T> =>
   object instanceof Observable;
 
 /**
@@ -77,7 +77,9 @@ const isObservable = <T>(object: unknown): object is Observable<T> =>
  * @param object - The object to check.
  * @returns True if the object has a 'subscribe' function, false otherwise.
  */
-const hasSubscribe = (object: unknown): object is { subscribe: () => void } =>
+export const hasSubscribe = (
+  object: unknown
+): object is { subscribe: () => void } =>
   typeof object === 'object' &&
   object !== null &&
   typeof (object as { subscribe?: () => void }).subscribe === 'function';
@@ -88,7 +90,7 @@ const hasSubscribe = (object: unknown): object is { subscribe: () => void } =>
  * @param object - The object to check.
  * @returns True if the object has a 'toPromise' function, false otherwise.
  */
-const hasToPromise = (
+export const hasToPromise = (
   object: unknown
 ): object is { toPromise: () => Promise<unknown> } =>
   typeof object === 'object' &&

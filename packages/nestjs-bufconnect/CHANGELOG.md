@@ -1,9 +1,8 @@
 ## [1.0.0-beta.3](https://github.com/wisewolf-oss/nestjs-bufconnect/compare/nestjs-bufconnect-v1.0.0-beta.2...nestjs-bufconnect-v1.0.0-beta.3) (2023-04-07)
 
-
 ### Features
 
-* add support for gRPC streaming ([#21](https://github.com/wisewolf-oss/nestjs-bufconnect/issues/21)) ([043b11d](https://github.com/wisewolf-oss/nestjs-bufconnect/commit/043b11d350a2bcb490ec0e60c674799b6e83c052))
+- add support for gRPC streaming ([#21](https://github.com/wisewolf-oss/nestjs-bufconnect/issues/21)) ([043b11d](https://github.com/wisewolf-oss/nestjs-bufconnect/commit/043b11d350a2bcb490ec0e60c674799b6e83c052))
 
 ## [1.0.0-beta.2](https://github.com/wisewolf-oss/nestjs-bufconnect/compare/nestjs-bufconnect-v1.0.0-beta.1...nestjs-bufconnect-v1.0.0-beta.2) (2023-04-04)
 

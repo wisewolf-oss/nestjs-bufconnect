@@ -44,6 +44,74 @@ describe('router', () => {
         'say'
       );
     });
+
+    it('should not add handler if handlerMetadata is not defined', () => {
+      // Add an undefined handler for the test
+      handlers.set(
+        JSON.stringify({
+          service: ElizaTestService.typeName,
+          rpc: 'undefinedHandler',
+          streaming: MethodType.NO_STREAMING,
+        }),
+        {} as MessageHandler
+      );
+
+      const serviceHandlersMap = createServiceHandlersMap(
+        handlers,
+        customMetadataStore
+      );
+
+      expect(serviceHandlersMap[ElizaTestService.typeName]).toBeUndefined();
+    });
+
+    it('should not add handler if service is not found in customMetadataStore', () => {
+      const invalidServiceName = 'InvalidService';
+
+      handlers.set(
+        JSON.stringify({
+          service: invalidServiceName,
+          rpc: 'say',
+          streaming: MethodType.NO_STREAMING,
+        }),
+        sayHandler
+      );
+
+      const serviceHandlersMap = createServiceHandlersMap(
+        handlers,
+        customMetadataStore
+      );
+
+      expect(serviceHandlersMap[invalidServiceName]).toBeUndefined();
+    });
+
+    it('should not add handler if methodProto is not found', () => {
+      const invalidMethodName = 'invalidMethod';
+
+      handlers.set(
+        JSON.stringify({
+          service: ElizaTestService.typeName,
+          rpc: invalidMethodName,
+          streaming: MethodType.NO_STREAMING,
+        }),
+        sayHandler
+      );
+
+      const serviceHandlersMap = createServiceHandlersMap(
+        handlers,
+        customMetadataStore
+      );
+
+      // Check if the serviceHandlersMap entry for ElizaTestService.typeName exists
+      if (serviceHandlersMap[ElizaTestService.typeName]) {
+        // Check for the absence of the invalidMethodName property
+        expect(
+          serviceHandlersMap[ElizaTestService.typeName]
+        ).not.toHaveProperty(invalidMethodName);
+      } else {
+        // If the entry does not exist, the test case is successful as the handler was not added
+        expect(serviceHandlersMap[ElizaTestService.typeName]).toBeUndefined();
+      }
+    });
   });
 
   describe('addServicesToRouter', () => {
@@ -67,6 +135,27 @@ describe('router', () => {
       expect(router.handlers).toHaveLength(1);
       expect(router.handlers[0].service).toBe(ElizaTestService);
       expect(router.handlers[0].service.methods).toHaveProperty('say');
+    });
+
+    it('should create a service handlers map with RX_STREAMING', () => {
+      handlers.set(
+        JSON.stringify({
+          service: ElizaTestService.typeName,
+          rpc: 'say',
+          streaming: MethodType.RX_STREAMING,
+        }),
+        sayHandler
+      );
+
+      const serviceHandlersMap = createServiceHandlersMap(
+        handlers,
+        customMetadataStore
+      );
+
+      expect(serviceHandlersMap[ElizaTestService.typeName]).toBeDefined();
+      expect(serviceHandlersMap[ElizaTestService.typeName]).toHaveProperty(
+        'say'
+      );
     });
   });
 });
