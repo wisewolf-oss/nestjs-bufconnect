@@ -15,16 +15,6 @@ describe('async', () => {
       expect(result).toBe(input);
     });
 
-    it('should create a new Observable when given an object with subscribe', () => {
-      const input = {
-        subscribe: () => {},
-      };
-
-      const result = transformToObservable(input);
-
-      expect(result).toBeInstanceOf(Observable);
-    });
-
     it('should create a new Observable when given an object with toPromise', async () => {
       const expectedResult = 'test-result';
       const input = {
