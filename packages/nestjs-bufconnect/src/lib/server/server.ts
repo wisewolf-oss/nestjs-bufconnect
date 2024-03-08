@@ -1,8 +1,8 @@
 import * as http from 'http';
 import * as https from 'https';
 import * as http2 from 'http2';
-import { ConnectRouter } from '@bufbuild/connect';
-import { connectNodeAdapter } from '@bufbuild/connect-node';
+import { ConnectRouter } from '@connectrpc/connect';
+import { connectNodeAdapter } from '@connectrpc/connect-node';
 import {
   Http2InsecureOptions,
   Http2Options,

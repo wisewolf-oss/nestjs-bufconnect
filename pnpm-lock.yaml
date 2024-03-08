@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 importers:
   .:
     dependencies:
@@ -154,26 +158,26 @@ importers:
 
   packages/nestjs-bufconnect:
     dependencies:
-      '@bufbuild/connect':
-        specifier: ^0.8.4
-        version: 0.8.4(@bufbuild/protobuf@1.2.0)
-      '@bufbuild/connect-node':
-        specifier: ^0.8.4
-        version: 0.8.4(@bufbuild/protobuf@1.2.0)
       '@bufbuild/protobuf':
-        specifier: ^1.2.0
-        version: 1.2.0
+        specifier: ^1.7.2
+        version: 1.7.2
+      '@connectrpc/connect':
+        specifier: ^1.4.0
+        version: 1.4.0(@bufbuild/protobuf@1.7.2)
+      '@connectrpc/connect-node':
+        specifier: ^1.4.0
+        version: 1.4.0(@bufbuild/protobuf@1.7.2)(@connectrpc/connect@1.4.0)
       '@nestjs/common':
-        specifier: ^9.0.0
+        specifier: ^9.0.0 || ^10.0.0
         version: 9.3.12(reflect-metadata@0.1.13)(rxjs@7.8.0)
       '@nestjs/core':
-        specifier: ^9.0.0
+        specifier: ^9.0.0 || ^10.0.0
         version: 9.3.12(@nestjs/common@9.3.12)(@nestjs/microservices@9.3.12)(@nestjs/platform-express@9.3.12)(reflect-metadata@0.1.13)(rxjs@7.8.0)
       '@nestjs/microservices':
-        specifier: ^9.0.0
+        specifier: ^9.0.0 || ^10.0.0
         version: 9.3.12(@nestjs/common@9.3.12)(@nestjs/core@9.3.12)(reflect-metadata@0.1.13)(rxjs@7.8.0)
       '@nestjs/platform-express':
-        specifier: ^9.0.0
+        specifier: ^9.0.0 || ^10.0.0
         version: 9.3.12(@nestjs/common@9.3.12)(@nestjs/core@9.3.12)
       reflect-metadata:
         specifier: ^0.1.13
@@ -1835,35 +1839,10 @@ packages:
       }
     dev: true
 
-  /@bufbuild/connect-node@0.8.4(@bufbuild/protobuf@1.2.0):
+  /@bufbuild/protobuf@1.7.2:
     resolution:
       {
-        integrity: sha512-i2C5Q/BiVA29Uj9msn7hiFvlzPp0jiU+P+MBfZVf3vg2PmklnAoA9UETt3MNjpOHd54fvJkAK964koc7iVyCKA==,
-      }
-    engines: { node: '>=16.0.0' }
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.0.0
-    dependencies:
-      '@bufbuild/connect': 0.8.4(@bufbuild/protobuf@1.2.0)
-      '@bufbuild/protobuf': 1.2.0
-      headers-polyfill: 3.1.2
-    dev: false
-
-  /@bufbuild/connect@0.8.4(@bufbuild/protobuf@1.2.0):
-    resolution:
-      {
-        integrity: sha512-99FwsvhEDTUJAXLJEyqdKhAle/MuFrRtkRBdRFLH2oNdI5Tv0Qaa7oMcQXKPFPQDfRdJEZe+dt8scmRVN55njA==,
-      }
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.0.0
-    dependencies:
-      '@bufbuild/protobuf': 1.2.0
-    dev: false
-
-  /@bufbuild/protobuf@1.2.0:
-    resolution:
-      {
-        integrity: sha512-MBVuQMOBHxgGnZ9XCUIi8WOy5O/T4ma3TduCRhRvndv3UDbG9cHgd8h6nOYSGyBYPEvXf1z9nTwhp8mVIDbq2g==,
+        integrity: sha512-i5GE2Dk5ekdlK1TR7SugY4LWRrKSfb5T1Qn4unpIMbfxoeGKERKQ59HG3iYewacGD10SR7UzevfPnh6my4tNmQ==,
       }
     dev: false
 
@@ -2129,6 +2108,32 @@ packages:
       chalk: 4.1.2
     dev: true
 
+  /@connectrpc/connect-node@1.4.0(@bufbuild/protobuf@1.7.2)(@connectrpc/connect@1.4.0):
+    resolution:
+      {
+        integrity: sha512-0ANnrr6SvsjevsWEgdzHy7BaHkluZyS6s4xNoVt7RBHFR5V/kT9lPokoIbYUOU9JHzdRgTaS3x5595mwUsu15g==,
+      }
+    engines: { node: '>=16.0.0' }
+    peerDependencies:
+      '@bufbuild/protobuf': ^1.4.2
+      '@connectrpc/connect': 1.4.0
+    dependencies:
+      '@bufbuild/protobuf': 1.7.2
+      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.7.2)
+      undici: 5.28.3
+    dev: false
+
+  /@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.7.2):
+    resolution:
+      {
+        integrity: sha512-vZeOkKaAjyV4+RH3+rJZIfDFJAfr+7fyYr6sLDKbYX3uuTVszhFe9/YKf5DNqrDb5cKdKVlYkGn6DTDqMitAnA==,
+      }
+    peerDependencies:
+      '@bufbuild/protobuf': ^1.4.2
+    dependencies:
+      '@bufbuild/protobuf': 1.7.2
+    dev: false
+
   /@cspotcode/source-map-support@0.8.1:
     resolution:
       {
@@ -2179,6 +2184,14 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@fastify/busboy@2.1.1:
+    resolution:
+      {
+        integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==,
+      }
+    engines: { node: '>=14' }
+    dev: false
 
   /@humanwhocodes/config-array@0.9.5:
     resolution:
@@ -9169,13 +9182,6 @@ packages:
     dependencies:
       function-bind: 1.1.1
 
-  /headers-polyfill@3.1.2:
-    resolution:
-      {
-        integrity: sha512-tWCK4biJ6hcLqTviLXVR9DTRfYGQMXEIUj3gwJ2rZ5wO/at3XtkI4g8mCvFdUF9l1KMBNCfmNAdnahm1cgavQA==,
-      }
-    dev: false
-
   /hook-std@3.0.0:
     resolution:
       {
@@ -11405,8 +11411,6 @@ packages:
       webpack: '*'
     peerDependenciesMeta:
       webpack:
-        optional: true
-      webpack-sources:
         optional: true
     dependencies:
       webpack: 5.76.3
@@ -13724,6 +13728,7 @@ packages:
       {
         integrity: sha512-yPw4Sng1gWghHQWj0B3ZggWUm4qVbPwPFcRG8KyxiU7J2OHFSoEHKS+EZ3fv5l1t9CyCiop6l/ZYeWbrgoQejw==,
       }
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -16014,6 +16019,16 @@ packages:
       has-symbols: 1.0.3
       which-boxed-primitive: 1.0.2
     dev: true
+
+  /undici@5.28.3:
+    resolution:
+      {
+        integrity: sha512-3ItfzbrhDlINjaP0duwnNsKpDQk3acHI3gVJ1z4fmwMK31k5G9OVIAMLSIaP6w4FaGkaAkN6zaQO9LUvZ1t7VA==,
+      }
+    engines: { node: '>=14.0' }
+    dependencies:
+      '@fastify/busboy': 2.1.1
+    dev: false
 
   /unicode-canonical-property-names-ecmascript@2.0.0:
     resolution:
