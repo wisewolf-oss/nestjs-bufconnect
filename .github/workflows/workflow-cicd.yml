@@ -6,6 +6,7 @@ on:
       - main
       - beta
   pull_request_target:
+    types: [assigned, opened, synchronize, reopened]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
