@@ -1,7 +1,7 @@
 {
   "name": "@wolfcoded/nestjs-bufconnect",
   "description": "NestJs BufConnect is a custom transport strategy for NestJs microservices that integrates with the Buf's gRPC implementation.",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-beta.4",
   "keywords": [
     "gRPC",
     "bufbuild",

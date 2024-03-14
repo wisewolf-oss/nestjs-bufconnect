@@ -1,3 +1,10 @@
+## [1.0.0-beta.4](https://github.com/wisewolf-oss/nestjs-bufconnect/compare/nestjs-bufconnect-v1.0.0-beta.3...nestjs-bufconnect-v1.0.0-beta.4) (2024-03-14)
+
+
+### :arrow_up: Build Dependencies
+
+* **deps:** update connect library and peer deps ([#29](https://github.com/wisewolf-oss/nestjs-bufconnect/issues/29)) ([d4e2b65](https://github.com/wisewolf-oss/nestjs-bufconnect/commit/d4e2b655759915c0859522fb5a7e0e9783aebedd))
+
 ## [1.0.0-beta.3](https://github.com/wisewolf-oss/nestjs-bufconnect/compare/nestjs-bufconnect-v1.0.0-beta.2...nestjs-bufconnect-v1.0.0-beta.3) (2023-04-07)
 
 ### Features
