@@ -1,4 +1,4 @@
-import { ConnectRouter, createConnectRouter } from '@bufbuild/connect';
+import { ConnectRouter, createConnectRouter } from '@connectrpc/connect';
 import { MessageHandler } from '@nestjs/microservices';
 import { MethodType } from '../nestjs-bufconnect.interface';
 import { CustomMetadataStore } from '../nestjs-bufconnect.provider';

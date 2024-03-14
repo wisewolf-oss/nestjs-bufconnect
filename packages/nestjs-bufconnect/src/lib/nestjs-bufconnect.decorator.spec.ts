@@ -1,8 +1,8 @@
 import {
   connectNodeAdapter,
   createGrpcTransport,
-} from '@bufbuild/connect-node';
-import { ConnectRouter, createPromiseClient } from '@bufbuild/connect';
+} from '@connectrpc/connect-node';
+import { ConnectRouter, createPromiseClient } from '@connectrpc/connect';
 import * as http2 from 'http2';
 import { GrpcMethodStreamingType, MessageHandler } from '@nestjs/microservices';
 import { MethodType } from './nestjs-bufconnect.interface';

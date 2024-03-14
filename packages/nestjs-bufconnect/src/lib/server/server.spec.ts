@@ -1,4 +1,4 @@
-import { ConnectRouter } from '@bufbuild/connect';
+import { ConnectRouter } from '@connectrpc/connect';
 import * as selfsigned from 'selfsigned';
 
 import * as https from 'https';

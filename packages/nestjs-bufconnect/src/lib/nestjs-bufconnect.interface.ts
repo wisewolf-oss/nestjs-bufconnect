@@ -3,7 +3,7 @@
  * (HTTP, HTTPS, HTTP2, HTTP2_INSECURE) and their options. It also provides types for handling
  * server instances and other utility types.
  */
-import { ConnectRouterOptions } from '@bufbuild/connect';
+import { ConnectRouterOptions } from '@connectrpc/connect';
 import * as http from 'http';
 import * as https from 'https';
 import * as http2 from 'http2';

@@ -1,4 +1,4 @@
-import { ConnectRouter } from '@bufbuild/connect';
+import { ConnectRouter } from '@connectrpc/connect';
 import { isString } from '@nestjs/common/utils/shared.utils';
 import {
   CustomTransportStrategy,
@@ -12,7 +12,7 @@ import { ServerTypeOptions } from './nestjs-bufconnect.interface';
 import { addServicesToRouter, createServiceHandlersMap } from './util';
 
 /**
- * A custom transport strategy for NestJS microservices that integrates with the '@bufbuild/connect-es' package.
+ * A custom transport strategy for NestJS microservices that integrates with the '@connectrpc/connect-es' package.
  *
  * @remarks
  * This class extends the `Server` class provided by NestJS and implements the `CustomTransportStrategy` interface.

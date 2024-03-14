@@ -1,4 +1,4 @@
-import { ConnectRouter, ServiceImpl } from '@bufbuild/connect';
+import { ConnectRouter, ServiceImpl } from '@connectrpc/connect';
 import { ServiceType } from '@bufbuild/protobuf';
 import { MessageHandler } from '@nestjs/microservices';
 import { lastValueFrom, Observable } from 'rxjs';
